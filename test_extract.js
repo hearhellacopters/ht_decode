@@ -1,0 +1,826 @@
+const fs = require('fs');
+
+// locations for decryption and extraction
+const decryList = [
+    {
+        start: 917904,
+        size: 19376,
+        disSize: 23416,
+        name: "Lv0_ELF"
+    },
+
+    {
+        start: 814784,
+        size: 176,
+        disSize: 578,
+        name: "Lv0_type5"
+    },
+    {
+        start: 814960,
+        size: 23328,
+        disSize: 27524,
+        name: "Lv0_type4"
+    },
+    {
+        start: 838288,
+        size: 27472,
+        disSize: 31632,
+        name: "Lv0_type1"
+    },
+    {
+        start: 865760,
+        size: 2912,
+        disSize: 7116,
+        name: "Lv0_type2"
+    },
+    {
+        start: 868672,
+        size: 2528,
+        disSize: 6744,
+        name: "Lv0_type3"
+    },
+    {
+        start: 871200,
+        size: 22016,
+        disSize: 28712,
+        name: "Lv0_type6"
+    },
+    {
+        start: 893216,
+        size: 14576,
+        disSize: 20484,
+        name: "Lv0_type8"
+    },
+    {
+        start: 907792,
+        size: 9664,
+        disSize: 16388,
+        name: "Lv0_type9"
+    },
+    {
+        start: 804464,
+        size: 10320,
+        disSize: 14372,
+        name: "Lv1_ELF"
+    },
+
+    {
+        start: 68112, // encryption starts
+        size: 58528,
+        disSize: 363820,
+        name: "Lv1_type144"
+    },
+    {
+        start: 126640,
+        size: 16608,
+        disSize: 32800,
+        name: "Lv1_type16"
+    },
+    {
+        start: 143248,
+        size: 18304,
+        disSize: 32800,
+        name: "Lv1_type18"
+    },
+    {
+        start: 161552,
+        size: 15936,
+        disSize: 32792,
+        name: "Lv1_type19"
+    },
+    {
+        start: 177488,
+        size: 16480,
+        disSize: 32792,
+        name: "Lv1_type20"
+    },
+    {
+        start: 193968,
+        size: 22240,
+        disSize: 41020,
+        name: "Lv1_type21"
+    },
+    {
+        start: 216208,
+        size: 22816,
+        disSize: 40996,
+        name: "Lv1_type22"
+    },
+    {
+        start: 239024,
+        size: 16208,
+        disSize: 32800,
+        name: "Lv1_type23"
+    },
+    {
+        start: 255232,
+        size: 17296,
+        disSize: 32792,
+        name: "Lv1_type24"
+    },
+    {
+        start: 272528,
+        size: 17568,
+        disSize: 32800,
+        name: "Lv1_type26"
+    },
+    {
+        start: 290096,
+        size: 15520,
+        disSize: 32800,
+        name: "Lv1_type27"
+    },
+    {
+        start: 305616,
+        size: 44272,
+        disSize: 70728,
+        name: "Lv1_type28"
+    },
+    {
+        start: 349888,
+        size: 17328,
+        disSize: 32808,
+        name: "Lv1_type29"
+    },
+    {
+        start: 367216,
+        size: 428944,
+        disSize: 841568,
+        name: "Lv1_type146"
+    },
+    {
+        start: 796160,
+        size: 7456,
+        disSize: 12292,
+        name: "Lv1_type145"
+    },
+    {
+        start: 57792,
+        size: 10320,
+        disSize: 14372,
+        name: "Lv2_ELF"
+    },
+
+    {
+        start: 33168,
+        size: 7952,
+        disSize: 6784,
+        name: "Lv2_type248"
+    },
+    {
+        start: 41120,
+        size: 2480,
+        disSize: 2180,
+        name: "Lv2_type241"
+    },
+    {
+        start: 43600,
+        size: 1584,
+        disSize: 840,
+        name: "Lv2_type242"
+    },
+    {
+        start: 45184,
+        size: 12384,
+        disSize: 20760,
+        name: "Lv2_type240"
+    },
+    {
+        start: 29264,
+        size: 3904,
+        disSize: 7952,
+        name: "Lv3_ELF"
+    }
+];
+
+/* ================================================================
+   EXACT AES T-TABLES FROM YOUR IDA PRO DUMP
+   ================================================================ */
+const AES_Td0 = new Uint32Array([
+    0x51F4A750, 0x7E416553, 0x1A17A4C3, 0x3A275E96, 0x3BAB6BCB, 0x1F9D45F1, 0xACFA58AB, 0x4BE30393,
+    0x2030FA55, 0xAD766DF6, 0x88CC7691, 0xF5024C25, 0x4FE5D7FC, 0xC52ACBD7, 0x26354480, 0xB562A38F,
+    0xDEB15A49, 0x25BA1B67, 0x45EA0E98, 0x5DFEC0E1, 0xC32F7502, 0x814CF012, 0x8D4697A3, 0x6BD3F9C6,
+    0x038F5FE7, 0x15929C95, 0xBF6D7AEB, 0x955259DA, 0xD4BE832D, 0x587421D3, 0x49E06929, 0x8EC9C844,
+    0x75C2896A, 0xF48E7978, 0x99583E6B, 0x27B971DD, 0xBEE14FB6, 0xF088AD17, 0xC920AC66, 0x7DCE3AB4,
+    0x63DF4A18, 0xE51A3182, 0x97513360, 0x62537F45, 0xB16477E0, 0xBB6BAE84, 0xFE81A01C, 0xF9082B94,
+    0x70486858, 0x8F45FD19, 0x94DE6C87, 0x527BF8B7, 0xAB73D323, 0x724B02E2, 0xE31F8F57, 0x6655AB2A,
+    0xB2EB2807, 0x2FB5C203, 0x86C57B9A, 0xD33708A5, 0x302887F2, 0x23BFA5B2, 0x02036ABA, 0xED16825C,
+    0x8ACF1C2B, 0xA779B492, 0xF307F2F0, 0x4E69E2A1, 0x65DAF4CD, 0x0605BED5, 0xD134621F, 0xC4A6FE8A,
+    0x342E539D, 0xA2F355A0, 0x058AE132, 0xA4F6EB75, 0x0B83EC39, 0x4060EFAA, 0x5E719F06, 0xBD6E1051,
+    0x3E218AF9, 0x96DD063D, 0xDD3E05AE, 0x4DE6BD46, 0x91548DB5, 0x71C45D05, 0x0406D46F, 0x605015FF,
+    0x1998FB24, 0xD6BDE997, 0x894043CC, 0x67D99E77, 0xB0E842BD, 0x07898B88, 0xE7195B38, 0x79C8EEDB,
+    0xA17C0A47, 0x7C420FE9, 0xF8841EC9, 0x00000000, 0x09808683, 0x322BED48, 0x1E1170AC, 0x6C5A724E,
+    0xFD0EFFFB, 0x0F853856, 0x3DAED51E, 0x362D3927, 0x0A0FD964, 0x685CA621, 0x9B5B54D1, 0x24362E3A,
+    0x0C0A67B1, 0x9357E70F, 0xB4EE96D2, 0x1B9B919E, 0x80C0C54F, 0x61DC20A2, 0x5A774B69, 0x1C121A16,
+    0xE293BA0A, 0xC0A02AE5, 0x3C22E043, 0x121B171D, 0x0E090D0B, 0xF28BC7AD, 0x2DB6A8B9, 0x141EA9C8,
+    0x57F11985, 0xAF75074C, 0xEE99DDBB, 0xA37F60FD, 0xF701269F, 0x5C72F5BC, 0x44663BC5, 0x5BFB7E34,
+    0x8B432976, 0xCB23C6DC, 0xB6EDFC68, 0xB8E4F163, 0xD731DCCA, 0x42638510, 0x13972240, 0x84C61120,
+    0x854A247D, 0xD2BB3DF8, 0xAEF93211, 0xC729A16D, 0x1D9E2F4B, 0xDCB230F3, 0x0D8652EC, 0x77C1E3D0,
+    0x2BB3166C, 0xA970B999, 0x119448FA, 0x47E96422, 0xA8FC8CC4, 0xA0F03F1A, 0x567D2CD8, 0x223390EF,
+    0x87494EC7, 0xD938D1C1, 0x8CCAA2FE, 0x98D40B36, 0xA6F581CF, 0xA57ADE28, 0xDAB78E26, 0x3FADBFA4,
+    0x2C3A9DE4, 0x5078920D, 0x6A5FCC9B, 0x547E4662, 0xF68D13C2, 0x90D8B8E8, 0x2E39F75E, 0x82C3AFF5,
+    0x9F5D80BE, 0x69D0937C, 0x6FD52DA9, 0xCF2512B3, 0xC8AC993B, 0x10187DA7, 0xE89C636E, 0xDB3BBB7B,
+    0xCD267809, 0x6E5918F4, 0xEC9AB701, 0x834F9AA8, 0xE6956E65, 0xAAFFE67E, 0x21BCCF08, 0xEF15E8E6,
+    0xBAE79BD9, 0x4A6F36CE, 0xEA9F09D4, 0x29B07CD6, 0x31A4B2AF, 0x2A3F2331, 0xC6A59430, 0x35A266C0,
+    0x744EBC37, 0xFC82CAA6, 0xE090D0B0, 0x33A7D815, 0xF104984A, 0x41ECDAF7, 0x7FCD500E, 0x1791F62F,
+    0x764DD68D, 0x43EFB04D, 0xCCAA4D54, 0xE49604DF, 0x9ED1B5E3, 0x4C6A881B, 0xC12C1FB8, 0x4665517F,
+    0x9D5EEA04, 0x018C355D, 0xFA877473, 0xFB0B412E, 0xB3671D5A, 0x92DBD252, 0xE9105633, 0x6DD64713,
+    0x9AD7618C, 0x37A10C7A, 0x59F8148E, 0xEB133C89, 0xCEA927EE, 0xB761C935, 0xE11CE5ED, 0x7A47B13C,
+    0x9CD2DF59, 0x55F2733F, 0x1814CE79, 0x73C737BF, 0x53F7CDEA, 0x5FFDAA5B, 0xDF3D6F14, 0x7844DB86,
+    0xCAAFF381, 0xB968C43E, 0x3824342C, 0xC2A3405F, 0x161DC372, 0xBCE2250C, 0x283C498B, 0xFF0D9541,
+    0x39A80171, 0x080CB3DE, 0xD8B4E49C, 0x6456C190, 0x7BCB8461, 0xD532B670, 0x486C5C74, 0xD0B85742
+]);
+
+const AES_Td1 = new Uint32Array([
+    0x5051F4A7, 0x537E4165, 0xC31A17A4, 0x963A275E, 0xCB3BAB6B, 0xF11F9D45, 0xABACFA58, 0x934BE303,
+    0x552030FA, 0xF6AD766D, 0x9188CC76, 0x25F5024C, 0xFC4FE5D7, 0xD7C52ACB, 0x80263544, 0x8FB562A3,
+    0x49DEB15A, 0x6725BA1B, 0x9845EA0E, 0xE15DFEC0, 0x02C32F75, 0x12814CF0, 0xA38D4697, 0xC66BD3F9,
+    0xE7038F5F, 0x9515929C, 0xEBBF6D7A, 0xDA955259, 0x2DD4BE83, 0xD3587421, 0x2949E069, 0x448EC9C8,
+    0x6A75C289, 0x78F48E79, 0x6B99583E, 0xDD27B971, 0xB6BEE14F, 0x17F088AD, 0x66C920AC, 0xB47DCE3A,
+    0x1863DF4A, 0x82E51A31, 0x60975133, 0x4562537F, 0xE0B16477, 0x84BB6BAE, 0x1CFE81A0, 0x94F9082B,
+    0x58704868, 0x198F45FD, 0x8794DE6C, 0xB7527BF8, 0x23AB73D3, 0xE2724B02, 0x57E31F8F, 0x2A6655AB,
+    0x07B2EB28, 0x032FB5C2, 0x9A86C57B, 0xA5D33708, 0xF2302887, 0xB223BFA5, 0xBA02036A, 0x5CED1682,
+    0x2B8ACF1C, 0x92A779B4, 0xF0F307F2, 0xA14E69E2, 0xCD65DAF4, 0xD50605BE, 0x1FD13462, 0x8AC4A6FE,
+    0x9D342E53, 0xA0A2F355, 0x32058AE1, 0x75A4F6EB, 0x390B83EC, 0xAA4060EF, 0x9F065E71, 0x51BD6E10,
+    0xF93E218A, 0x3D96DD06, 0xAEDD3E05, 0x464DE6BD, 0xB591548D, 0x0571C45D, 0x6F0406D4, 0xFF605015,
+    0x241998FB, 0x97D6BDE9, 0xCC894043, 0x7767D99E, 0xBDB0E842, 0x8807898B, 0x38E7195B, 0xDB79C8EE,
+    0x47A17C0A, 0xE97C420F, 0xC9F8841E, 0x00000000, 0x83098086, 0x48322BED, 0xAC1E1170, 0x4E6C5A72,
+    0xFBFD0EFF, 0x560F8538, 0x1E3DAED5, 0x27362D39, 0x640A0FD9, 0x21685CA6, 0xD19B5B54, 0x3A24362E,
+    0xB10C0A67, 0x0F9357E7, 0xD2B4EE96, 0x9E1B9B91, 0x4F80C0C5, 0xA261DC20, 0x695A774B, 0x161C121A,
+    0x0AE293BA, 0xE5C0A02A, 0x433C22E0, 0x1D121B17, 0x0B0E090D, 0xADF28BC7, 0xB92DB6A8, 0xC8141EA9,
+    0x8557F119, 0x4CAF7507, 0xBBEE99DD, 0xFDA37F60, 0x9FF70126, 0xBC5C72F5, 0xC544663B, 0x345BFB7E,
+    0x768B4329, 0xDCCB23C6, 0x68B6EDFC, 0x63B8E4F1, 0xCAD731DC, 0x10426385, 0x40139722, 0x2084C611,
+    0x7D854A24, 0xF8D2BB3D, 0x11AEF932, 0x6DC729A1, 0x4B1D9E2F, 0xF3DCB230, 0xEC0D8652, 0xD077C1E3,
+    0x6C2BB316, 0x99A970B9, 0xFA119448, 0x2247E964, 0xC4A8FC8C, 0x1AA0F03F, 0xD8567D2C, 0xEF223390,
+    0xC787494E, 0xC1D938D1, 0xFE8CCAA2, 0x3698D40B, 0xCFA6F581, 0x28A57ADE, 0x26DAB78E, 0xA43FADBF,
+    0xE42C3A9D, 0x0D507892, 0x9B6A5FCC, 0x62547E46, 0xC2F68D13, 0xE890D8B8, 0x5E2E39F7, 0xF582C3AF,
+    0xBE9F5D80, 0x7C69D093, 0xA96FD52D, 0xB3CF2512, 0x3BC8AC99, 0xA710187D, 0x6EE89C63, 0x7BDB3BBB,
+    0x09CD2678, 0xF46E5918, 0x01EC9AB7, 0xA8834F9A, 0x65E6956E, 0x7EAAFFE6, 0x0821BCCF, 0xE6EF15E8,
+    0xD9BAE79B, 0xCE4A6F36, 0xD4EA9F09, 0xD629B07C, 0xAF31A4B2, 0x312A3F23, 0x30C6A594, 0xC035A266,
+    0x37744EBC, 0xA6FC82CA, 0xB0E090D0, 0x1533A7D8, 0x4AF10498, 0xF741ECDA, 0x0E7FCD50, 0x2F1791F6,
+    0x8D764DD6, 0x4D43EFB0, 0x54CCAA4D, 0xDFE49604, 0xE39ED1B5, 0x1B4C6A88, 0xB8C12C1F, 0x7F466551,
+    0x049D5EEA, 0x5D018C35, 0x73FA8774, 0x2EFB0B41, 0x5AB3671D, 0x5292DBD2, 0x33E91056, 0x136DD647,
+    0x8C9AD761, 0x7A37A10C, 0x8E59F814, 0x89EB133C, 0xEECEA927, 0x35B761C9, 0xEDE11CE5, 0x3C7A47B1,
+    0x599CD2DF, 0x3F55F273, 0x791814CE, 0xBF73C737, 0xEA53F7CD, 0x5B5FFDAA, 0x14DF3D6F, 0x867844DB,
+    0x81CAAFF3, 0x3EB968C4, 0x2C382434, 0x5FC2A340, 0x72161DC3, 0x0CBCE225, 0x8B283C49, 0x41FF0D95,
+    0x7139A801, 0xDE080CB3, 0x9CD8B4E4, 0x906456C1, 0x617BCB84, 0x70D532B6, 0x74486C5C, 0x42D0B857
+]);
+
+const AES_Td2 = new Uint32Array([
+    0xA75051F4, 0x65537E41, 0xA4C31A17, 0x5E963A27, 0x6BCB3BAB, 0x45F11F9D, 0x58ABACFA, 0x03934BE3,
+    0xFA552030, 0x6DF6AD76, 0x769188CC, 0x4C25F502, 0xD7FC4FE5, 0xCBD7C52A, 0x44802635, 0xA38FB562,
+    0x5A49DEB1, 0x1B6725BA, 0x0E9845EA, 0xC0E15DFE, 0x7502C32F, 0xF012814C, 0x97A38D46, 0xF9C66BD3,
+    0x5FE7038F, 0x9C951592, 0x7AEBBF6D, 0x59DA9552, 0x832DD4BE, 0x21D35874, 0x692949E0, 0xC8448EC9,
+    0x896A75C2, 0x7978F48E, 0x3E6B9958, 0x71DD27B9, 0x4FB6BEE1, 0xAD17F088, 0xAC66C920, 0x3AB47DCE,
+    0x4A1863DF, 0x3182E51A, 0x33609751, 0x7F456253, 0x77E0B164, 0xAE84BB6B, 0xA01CFE81, 0x2B94F908,
+    0x68587048, 0xFD198F45, 0x6C8794DE, 0xF8B7527B, 0xD323AB73, 0x024B02E2, 0x8F57E31F, 0xAB2A6655,
+    0x2807B2EB, 0xC2032FB5, 0x7B9A86C5, 0x08A5D337, 0x87F23028, 0xA5B223BF, 0x6ABA0203, 0x825CED16,
+    0x1C2B8ACF, 0xB492A779, 0xF2F0F307, 0xE2A14E69, 0xF4CD65DA, 0xBED50605, 0x621FD134, 0xFE8AC4A6,
+    0x539D342E, 0x55A0A2F3, 0xE132058A, 0xEB75A4F6, 0xEC390B83, 0xEFAA4060, 0x9F065E71, 0x1051BD6E,
+    0x8AF93E21, 0x063DD96D, 0x05AEDD3E, 0xBD464DE6, 0x8DB59154, 0x5D0571C4, 0xD46F0406, 0x15FF6050,
+    0xFB241998, 0xE997D6BD, 0x43CC8940, 0x9E7767D9, 0x42BDB0E8, 0x8B880789, 0x5B38E719, 0xEEDB79C8,
+    0x0A47A17C, 0x0FE97C42, 0x1EC9F884, 0x00000000, 0x86830980, 0xED48322B, 0x70AC1E11, 0x724E6C5A,
+    0xFFFBFD0E, 0x38560F85, 0xD51E3DAE, 0x3927362D, 0xD9640A0F, 0xA621685C, 0x54D19B5B, 0x2E3A2436,
+    0x67B10C0A, 0xE70F9357, 0x96D2B4EE, 0x919E1B9B, 0xC54F80C0, 0x20A261DC, 0x4B695A77, 0x1A161C12,
+    0xBA0AE293, 0x2AE5C0A0, 0xE0433C22, 0x171D121B, 0x0D0B0E09, 0xC7ADF28B, 0xA8B92DB6, 0xA9C8141E,
+    0x198557F1, 0x074CAF75, 0xDDBBEE99, 0x60FDA37F, 0x269FF701, 0xF5BC5C72, 0x3BC54466, 0x7E345BFB,
+    0x29768B43, 0xC6DCCB23, 0xFC68B6ED, 0xF163B8E4, 0xDCCAD731, 0x85104263, 0x22401397, 0x112084C6,
+    0x247D854A, 0x3DF8D2BB, 0x3211AEF9, 0xA16DC729, 0x2F4B1D9E, 0x30F3DCB2, 0x52EC0D86, 0xE3D077C1,
+    0x166C2BB3, 0xB999A970, 0x48FA1194, 0x642247E9, 0x8CC4A8FC, 0x3F1AA0F0, 0x2CD8567D, 0x90EF2233,
+    0x4EC78749, 0xD1C1D938, 0xA2FE8CCA, 0x0BB3698D, 0x81CFA6F5, 0xDE28A57A, 0x8E26DAB7, 0xBFA43FAD,
+    0x9DE42C3A, 0x920D5078, 0xCC9B6A5F, 0x4662547E, 0x13C2F68D, 0xB8E890D8, 0xF75E2E39, 0xAFF582C3,
+    0x80BE9F5D, 0x937C69D0, 0x2DA96FD5, 0x12B3CF25, 0x993BC8AC, 0x7DA71018, 0x636EE89C, 0xBB7BDB3B,
+    0x7809CD26, 0x18F46E59, 0xB701EC9A, 0x9AA8834F, 0x6E65E695, 0xE67EAAFF, 0xCF0821BC, 0xE8E6EF15,
+    0x9BD9BAE7, 0x36CE4A6F, 0x09D4EA9F, 0x7CD629B0, 0xB2AF31A4, 0x23312A3F, 0x9430C6A5, 0x66C035A2,
+    0xBC37744E, 0xCAA6FC82, 0xD0B0E090, 0xD81533A7, 0x984AF104, 0xDAF741EC, 0x500E7FCD, 0xF62F1791,
+    0xD68D764D, 0xB04D43EF, 0x4D54CCAA, 0x04DFE496, 0xB5E39ED1, 0x881B4C6A, 0x1FB8C12C, 0x517F4665,
+    0xEA049D5E, 0x355D018C, 0x7473FA87, 0x412EFB0B, 0x1D5AB367, 0xD25292DB, 0x5633E910, 0x47136DD6,
+    0x618C9AD7, 0x0C7A37A1, 0x148E59F8, 0x3C89EB13, 0x27EECEA9, 0xC935B761, 0xE5EDE11C, 0xB13C7A47,
+    0xDF599CD2, 0x733F55F2, 0xCE791814, 0x37BF73C7, 0xCDEA53F7, 0xAA5B5FFD, 0x6F14DF3D, 0xDB867844,
+    0xF381CAAF, 0xC43EB968, 0x342C3824, 0x405FC2A3, 0xC372161D, 0x250CBCE2, 0x498B283C, 0x9541FF0D,
+    0x017139A8, 0xB3DE080C, 0xE49CD8B4, 0xC1906456, 0x84617BCB, 0xB670D532, 0x5C74486C, 0x5742D0B8
+]);
+
+const AES_Td3 = new Uint32Array([
+    0xF4A75051, 0x4165537E, 0x17A4C31A, 0x275E963A, 0xAB6BCB3B, 0x9D45F11F, 0xFA58ABAC, 0xE303934B,
+    0x30FA5520, 0x766DF6AD, 0xCC769188, 0x024C25F5, 0xE5D7FC4F, 0x2ACBD7C5, 0x35448026, 0x62A38FB5,
+    0xB15A49DE, 0xBA1B6725, 0xEA0E9845, 0xFEC0E15D, 0x2F7502C3, 0x4CF01281, 0x4697A38D, 0xD3F9C66B,
+    0x8F5FE703, 0x929C9515, 0x6D7AEBBF, 0x5259DA95, 0xBE832DD4, 0x7421D358, 0xE0692949, 0xC9C8448E,
+    0xC2896A75, 0x8E7978F4, 0x583E6B99, 0xB971DD27, 0xE14FB6BE, 0x88AD17F0, 0x20AC66C9, 0xCE3AB47D,
+    0xDF4A1863, 0x1A3182E5, 0x51336097, 0x537F4562, 0x6477E0B1, 0x6BAE84BB, 0x81A01CFE, 0x082B94F9,
+    0x48685870, 0x45FD198F, 0xDE6C8794, 0x7BF8B752, 0x73D323AB, 0x4B02E272, 0x1F8F57E3, 0x55AB2A66,
+    0xEB2807B2, 0xB5C2032F, 0xC57B9A86, 0x3708A5D3, 0x2887F230, 0xBFA5B223, 0x036ABA02, 0x16825CED,
+    0xCF1C2B8A, 0x79B492A7, 0x07F2F0F3, 0x69E2A14E, 0xDAF4CD65, 0x05BED506, 0x34621FD1, 0xA6FE8AC4,
+    0x2E539D34, 0xF355A0A2, 0x8AE13205, 0xF6EB75A4, 0x83EC390B, 0x60EFAA40, 0x719F065E, 0x6E1051BD,
+    0x218AF93E, 0xDD063D96, 0x3E05AEDD, 0xE6BD464D, 0x548DB591, 0xC45D0571, 0x06D46F04, 0x5015FF60,
+    0x98FB2419, 0xBDE997D6, 0x4043CC89, 0xD99E7767, 0xE842BDB0, 0x898B8807, 0x195B38E7, 0xC8EEDB79,
+    0x7C0A47A1, 0x420FE97C, 0x841EC9F8, 0x00000000, 0x80868309, 0x2BED4832, 0x1170AC1E, 0x5A724E6C,
+    0x0EFFFBFD, 0x8538560F, 0xAED51E3D, 0x2D392736, 0x0FD9640A, 0x5CA62168, 0x5B54D19B, 0x362E3A24,
+    0x0A67B10C, 0x57E70F93, 0xEE96D2B4, 0x9B919E1B, 0xC0C54F80, 0xDC20A261, 0x774B695A, 0x121A161C,
+    0x93BA0AE2, 0xA02AE5C0, 0x22E0433C, 0x1B171D12, 0x090D0B0E, 0x8BC7ADF2, 0xB6A8B92D, 0x1EA9C814,
+    0xF1198557, 0x75074CAF, 0x99DDBBEE, 0x7F60FDA3, 0x01269FF7, 0x72F5BC5C, 0x663BC544, 0xFB7E345B,
+    0x4329768B, 0x23C6DCCB, 0xEDFC68B6, 0xE4F163B8, 0x31DCCAD7, 0x63851042, 0x97224013, 0xC6112084,
+    0x4A247D85, 0xBB3DF8D2, 0xF93211AE, 0x29A16DC7, 0x9E2F4B1D, 0xB230F3DC, 0x8652EC0D, 0xC1E3D077,
+    0xB3166C2B, 0x70B999A9, 0x9448FA11, 0xE9642247, 0xFC8CC4A8, 0xF03F1AA0, 0x7D2CD856, 0x3390EF22,
+    0x494EC787, 0x38D1C1D9, 0xCAA2FE8C, 0xD40B3698, 0xF581CFA6, 0x7ADE28A5, 0xB78E26DA, 0xADBFA43F,
+    0x3A9DE42C, 0x78920D50, 0x5FCC9B6A, 0x7E466254, 0x8D13C2F6, 0xD8B8E890, 0x39F75E2E, 0xC3AFF582,
+    0x5D80BE9F, 0xD0937C69, 0xD52DA96F, 0x2512B3CF, 0xAC993BC8, 0x187DA710, 0x9C636EE8, 0x3BBB7BDB,
+    0x267809CD, 0x5918F46E, 0x9AB701EC, 0x4F9AA883, 0x956E65E6, 0xFFE67EAA, 0xBCCF0821, 0x15E8E6EF,
+    0xE79BD9BA, 0x6F36CE4A, 0x9F09D4EA, 0xB07CD629, 0xA4B2AF31, 0x3F23312A, 0xA59430C6, 0xA266C035,
+    0x4EBC3774, 0x82CAA6FC, 0x90D0B0E0, 0xA7D81533, 0x04984AF1, 0xECDAF741, 0xCD500E7F, 0x91F62F17,
+    0x4DD68D76, 0xEFB04D43, 0xAA4D54CC, 0x9604DFE4, 0xD1B5E39E, 0x6A881B4C, 0x2C1FB8C1, 0x65517F46,
+    0x5EEA049D, 0x8C355D01, 0x877473FA, 0x0B412EFB, 0x671D5AB3, 0xDBD25292, 0x105633E9, 0xD647136D,
+    0xD7618C9A, 0xA10C7A37, 0xF8148E59, 0x133C89EB, 0xA927EECE, 0x61C935B7, 0x1CE5EDE1, 0x47B13C7A,
+    0xD2DF599C, 0xF2733F55, 0x14CE7918, 0xC737BF73, 0xF7CDEA53, 0xFDAA5B5F, 0x3D6F14DF, 0x44DB8678,
+    0xAFF381CA, 0x68C43EB9, 0x24342C38, 0xA3405FC2, 0x1DC37216, 0xE2250CBC, 0x3C498B28, 0x0D9541FF,
+    0xA8017139, 0x0CB3DE08, 0xB4E49CD8, 0x56C19064, 0xCB84617B, 0x32B670D5, 0x6C5C7448, 0xB85742D0
+]);
+
+const AES_Td4 = new Uint32Array([
+    0x52525252, 0x09090909, 0x6A6A6A6A, 0xD5D5D5D5, 0x30303030, 0x36363636, 0xA5A5A5A5, 0x38383838,
+    0xBFBFBFBF, 0x40404040, 0xA3A3A3A3, 0x9E9E9E9E, 0x81818181, 0xF3F3F3F3, 0xD7D7D7D7, 0xFBFBFBFB,
+    0x7C7C7C7C, 0xE3E3E3E3, 0x39393939, 0x82828282, 0x9B9B9B9B, 0x2F2F2F2F, 0xFFFFFFFF, 0x87878787,
+    0x34343434, 0x8E8E8E8E, 0x43434343, 0x44444444, 0xC4C4C4C4, 0xDEDEDEDE, 0xE9E9E9E9, 0xCBCBCBCB,
+    0x54545454, 0x7B7B7B7B, 0x94949494, 0x32323232, 0xA6A6A6A6, 0xC2C2C2C2, 0x23232323, 0x3D3D3D3D,
+    0xEEEEEEEE, 0x4C4C4C4C, 0x95959595, 0x0B0B0B0B, 0x42424242, 0xFAFAFAFA, 0xC3C3C3C3, 0x4E4E4E4E,
+    0x08080808, 0x2E2E2E2E, 0xA1A1A1A1, 0x66666666, 0x28282828, 0xD9D9D9D9, 0x24242424, 0xB2B2B2B2,
+    0x76767676, 0x5B5B5B5B, 0xA2A2A2A2, 0x49494949, 0x6D6D6D6D, 0x8B8B8B8B, 0xD1D1D1D1, 0x25252525,
+    0x72727272, 0xF8F8F8F8, 0xF6F6F6F6, 0x64646464, 0x86868686, 0x68686868, 0x98989898, 0x16161616,
+    0xD4D4D4D4, 0xA4A4A4A4, 0x5C5C5C5C, 0xCCCCCCCC, 0x5D5D5D5D, 0x65656565, 0xB6B6B6B6, 0x92929292,
+    0x6C6C6C6C, 0x70707070, 0x48484848, 0x50505050, 0xFDFDFDFD, 0xEDEDEDED, 0xB9B9B9B9, 0xDADADADA,
+    0x5E5E5E5E, 0x15151515, 0x46464646, 0x57575757, 0xA7A7A7A7, 0x8D8D8D8D, 0x9D9D9D9D, 0x84848484,
+    0x90909090, 0xD8D8D8D8, 0xABABABAB, 0x00000000, 0x8C8C8C8C, 0xBCBCBCBC, 0xD3D3D3D3, 0x0A0A0A0A,
+    0xF7F7F7F7, 0xE4E4E4E4, 0x58585858, 0x05050505, 0xB8B8B8B8, 0xB3B3B3B3, 0x45454545, 0x06060606,
+    0xD0D0D0D0, 0x2C2C2C2C, 0x1E1E1E1E, 0x8F8F8F8F, 0xCACACACA, 0x3F3F3F3F, 0x0F0F0F0F, 0x02020202,
+    0xC1C1C1C1, 0xAFAFAFAF, 0xBDBDBDBD, 0x03030303, 0x01010101, 0x13131313, 0x8A8A8A8A, 0x6B6B6B6B,
+    0x3A3A3A3A, 0x91919191, 0x11111111, 0x41414141, 0x4F4F4F4F, 0x67676767, 0xDCDCDCDC, 0xEAEAEAEA,
+    0x97979797, 0xF2F2F2F2, 0xCFCFCFCF, 0xCECECECE, 0xF0F0F0F0, 0xB4B4B4B4, 0xE6E6E6E6, 0x73737373,
+    0x96969696, 0xACACACAC, 0x74747474, 0x22222222, 0xE7E7E7E7, 0xADADADAD, 0x35353535, 0x85858585,
+    0xE2E2E2E2, 0xF9F9F9F9, 0x37373737, 0xE8E8E8E8, 0x1C1C1C1C, 0x75757575, 0xDFDFDFDF, 0x6E6E6E6E,
+    0x47474747, 0xF1F1F1F1, 0x1A1A1A1A, 0x71717171, 0x1D1D1D1D, 0x29292929, 0xC5C5C5C5, 0x89898989,
+    0x6F6F6F6F, 0xB7B7B7B7, 0x62626262, 0x0E0E0E0E, 0xAAAAAAAA, 0x18181818, 0xBEBEBEBE, 0x1B1B1B1B,
+    0xFCFCFCFC, 0x56565656, 0x3E3E3E3E, 0x4B4B4B4B, 0xC6C6C6C6, 0xD2D2D2D2, 0x79797979, 0x20202020,
+    0x9A9A9A9A, 0xDBDBDBDB, 0xC0C0C0C0, 0xFEFEFEFE, 0x78787878, 0xCDCDCDCD, 0x5A5A5A5A, 0xF4F4F4F4,
+    0x1F1F1F1F, 0xDDDDDDDD, 0xA8A8A8A8, 0x33333333, 0x88888888, 0x07070707, 0xC7C7C7C7, 0x31313131,
+    0xB1B1B1B1, 0x12121212, 0x10101010, 0x59595959, 0x27272727, 0x80808080, 0xECECECEC, 0x5F5F5F5F,
+    0x60606060, 0x51515151, 0x7F7F7F7F, 0xA9A9A9A9, 0x19191919, 0xB5B5B5B5, 0x4A4A4A4A, 0x0D0D0D0D,
+    0x2D2D2D2D, 0xE5E5E5E5, 0x7A7A7A7A, 0x9F9F9F9F, 0x93939393, 0xC9C9C9C9, 0x9C9C9C9C, 0xEFEFEFEF,
+    0xA0A0A0A0, 0xE0E0E0E0, 0x3B3B3B3B, 0x4D4D4D4D, 0xAEAEAEAE, 0x2A2A2A2A, 0xF5F5F5F5, 0xB0B0B0B0,
+    0xC8C8C8C8, 0xEBEBEBEB, 0xBBBBBBBB, 0x3C3C3C3C, 0x83838383, 0x53535353, 0x99999999, 0x61616161,
+    0x17171717, 0x2B2B2B2B, 0x04040404, 0x7E7E7E7E, 0xBABABABA, 0x77777777, 0xD6D6D6D6, 0x26262626,
+    0xE1E1E1E1, 0x69696969, 0x14141414, 0x63636363, 0x55555555, 0x21212121, 0x0C0C0C0C, 0x7D7D7D7D
+]);
+
+/* Byte extraction macros */
+const BYTE1 = (x) => (x >>> 8) & 0xFF;
+const BYTE2 = (x) => (x >>> 16) & 0xFF;
+const HIBYTE = (x) => (x >>> 24) & 0xFF;
+const BYTE0 = (x) => x & 0xFF;
+
+/**
+* AES_decrypt
+* 
+* @param {Uint32Array} rk 
+* @param {number} keyLength 
+* @param {Buffer} input 
+* @param {Buffer} output 
+*/
+function AES_decrypt(rk, keyLength, input, output) {
+    var _rk, t0, t2, t1, t3, hbcc, _rk7;
+    let r = keyLength >> 1;
+    let s0 = input[3] ^ rk[0] ^ (input[0] << 24) ^ (input[1] << 16) ^ (input[2] << 8);
+    let s1 = input[7] ^ rk[1] ^ (input[4] << 24) ^ (input[5] << 16) ^ (input[6] << 8);
+    let s2 = input[11] ^ rk[2] ^ (input[8] << 24) ^ (input[9] << 16) ^ (input[10] << 8);
+    let s3 = input[15] ^ rk[3] ^ (input[12] << 24) ^ (input[13] << 16) ^ (input[14] << 8);
+    for (_rk = rk;
+        ;
+        s3 = AES_Td0[HIBYTE(t3)] ^ AES_Td3[BYTE0(t0)] ^ _rk[3] ^ AES_Td1[BYTE2(t2)] ^ AES_Td2[BYTE1(t1)]
+    ) {
+        t0 = _rk[4] ^ AES_Td3[BYTE0(s1)] ^ AES_Td0[HIBYTE(s0)] ^ AES_Td1[BYTE2(s3)] ^ AES_Td2[BYTE1(s2)];
+        t1 = _rk[5] ^ AES_Td3[BYTE0(s2)] ^ AES_Td0[HIBYTE(s1)] ^ AES_Td1[BYTE2(s0)] ^ AES_Td2[BYTE1(s3)];
+        t2 = _rk[6] ^ AES_Td3[BYTE0(s3)] ^ AES_Td0[HIBYTE(s2)] ^ AES_Td1[BYTE2(s1)] ^ AES_Td2[BYTE1(s0)];
+        _rk7 = _rk[7];
+        _rk += 8;
+        hbcc = HIBYTE(t0);
+        t3 = AES_Td3[BYTE0(s0)] ^ AES_Td0[HIBYTE(s3)] ^ _rk7 ^ AES_Td1[BYTE2(s2)] ^ AES_Td2[BYTE1(s1)];
+        if (!--r) {
+            break;
+        }
+        s0 = AES_Td3[BYTE0(t1)] ^ AES_Td0[hbcc] ^ _rk[0] ^ AES_Td1[BYTE2(t3)] ^ AES_Td2[BYTE1(t2)];
+        s1 = AES_Td0[HIBYTE(t1)] ^ AES_Td3[BYTE0(t2)] ^ _rk[1] ^ AES_Td1[BYTE2(t0)] ^ AES_Td2[BYTE1(t3)];
+        s2 = AES_Td0[HIBYTE(t2)] ^ AES_Td3[BYTE0(t3)] ^ _rk[2] ^ AES_Td1[BYTE2(t1)] ^ AES_Td2[BYTE1(t0)];
+    }
+
+    var outPtr = rk.subarray(8 * (keyLength >> 1), rk.length);
+    var o0 = BYTE0(AES_Td4[BYTE0(t1)])
+        ^ (HIBYTE(AES_Td4[hbcc]) << 24)
+        ^ outPtr[0]
+        ^ AES_Td4[BYTE2(t3)]
+        & 0xFF0000
+        ^ AES_Td4[BYTE1(t2)]
+        & 0xFF00;
+    output[0] = HIBYTE(o0);
+    output[1] = BYTE2(o0);
+    output[2] = BYTE1(o0);
+    output[3] = o0;
+    var o1 = outPtr[1]
+        ^ BYTE0(AES_Td4[BYTE0(t2)])
+        ^ (HIBYTE(AES_Td4[HIBYTE(t1)]) << 24)
+        ^ AES_Td4[BYTE2(t0)]
+        & 0xFF0000
+        ^ AES_Td4[BYTE1(t3)]
+        & 0xFF00;
+    output[4] = HIBYTE(o1);
+    output[5] = BYTE2(o1);
+    output[6] = BYTE1(o1);
+    output[7] = o1;
+    var o2 = outPtr[2]
+        ^ BYTE0(AES_Td4[BYTE0(t3)])
+        ^ (HIBYTE(AES_Td4[HIBYTE(t2)]) << 24)
+        ^ AES_Td4[BYTE2(t1)]
+        & 0xFF0000
+        ^ AES_Td4[BYTE1(t0)]
+        & 0xFF00;
+    output[8] = HIBYTE(o2);
+    output[9] = BYTE2(o2);
+    output[10] = BYTE1(o2);
+    output[11] = o2;
+    var o3 = AES_Td4[BYTE1(t1)]
+        & 0xFF00
+        ^ AES_Td4[BYTE2(t2)]
+        & 0xFF0000
+        ^ BYTE0(AES_Td4[BYTE0(t0)])
+        ^ (HIBYTE(AES_Td4[HIBYTE(t3)]) << 24)
+        ^ outPtr[3];
+    output[12] = HIBYTE(o3);
+    output[13] = BYTE2(o3);
+    output[14] = BYTE1(o3);
+    output[15] = o3;
+}
+
+/**
+ * decry
+ * 
+ * @param {Buffer} ELFBufferSlice 
+ * @param {Buffer} inputRoundKeys 
+ * @returns 
+ */
+function decrypt(ELFBufferSlice, inputRoundKeys) {
+    if (!ELFBufferSlice || !inputRoundKeys || ELFBufferSlice.byteLength === 0) return 0;
+
+    var tmpELFBuffer = ELFBufferSlice;
+
+    const keySizeBits = inputRoundKeys.readUInt16LE(0);
+
+    let rounds = 0;
+
+    if (keySizeBits === 192) rounds = 12;
+    else if (keySizeBits !== 256 && keySizeBits !== 128) return 0;
+    else if (keySizeBits === 256) rounds = 14;
+    else rounds = 10; // 128
+
+    if (rounds == inputRoundKeys.readUInt16LE(2)) {
+
+        var inputProcessingBuffer = Buffer.alloc(32, 0);
+
+        var currentBuffer = inputProcessingBuffer;
+
+        var roundsCheck = ELFBufferSlice.byteLength;
+
+        let currentRound = 0;
+
+        var advancedBuffer = inputProcessingBuffer.subarray(16, 32);
+
+        const totalRounds = roundsCheck >> 4;
+
+        const roundKeys = inputRoundKeys.subarray(4, inputRoundKeys.length);
+
+        const rk = new Uint32Array(roundKeys.buffer, roundKeys.byteOffset, roundKeys.length / 4);
+
+        while (currentRound < totalRounds) {
+            advancedBuffer.writeUint32LE(tmpELFBuffer.readUint32LE(0), 0);
+            advancedBuffer.writeUint32LE(tmpELFBuffer.readUint32LE(4), 4);
+            advancedBuffer.writeUint32LE(tmpELFBuffer.readUint32LE(8), 8);
+            advancedBuffer.writeUint32LE(tmpELFBuffer.readUint32LE(12), 12);
+
+            AES_decrypt(
+                rk,
+                rounds,
+                advancedBuffer,
+                tmpELFBuffer
+            );
+
+            tmpELFBuffer.writeUint32LE((tmpELFBuffer.readUint32LE(0) ^ currentBuffer.readUint32LE(0)) >>> 0, 0);
+            tmpELFBuffer.writeUint32LE((tmpELFBuffer.readUint32LE(4) ^ currentBuffer.readUint32LE(4)) >>> 0, 4);
+            tmpELFBuffer.writeUint32LE((tmpELFBuffer.readUint32LE(8) ^ currentBuffer.readUint32LE(8)) >>> 0, 8);
+            tmpELFBuffer.writeUint32LE((tmpELFBuffer.readUint32LE(12) ^ currentBuffer.readUint32LE(12)) >>> 0, 12);
+            // advance buffer
+            tmpELFBuffer = tmpELFBuffer.subarray(16, tmpELFBuffer.byteLength);
+            ++currentRound;
+            var tempSwitch = currentBuffer;
+            currentBuffer = advancedBuffer;
+            advancedBuffer = tempSwitch;
+        }
+
+        return 1;
+    }
+
+    return 0;
+}
+
+/**
+ * huffRLE
+ * 
+ * @param {Buffer} nodes 
+ * @param {Buffer} in_buf 
+ * @param {Buffer} out_buf 
+ * @returns 
+ */
+function huffRLE(nodes, in_buf, in_len, out_buf) {
+    const out_len = out_buf.byteLength;
+    var out_off = 0;
+
+    var compressionLevel = 0;
+    var sizeRead = 0;
+    var repeatAmount = 0;
+
+    var adjustedAmount = 0;
+
+    for (let index = 0; index < out_len; index += adjustedAmount) {
+        if (sizeRead >= in_len) {
+            return 0;
+        }
+        var firstRead = in_buf.readUint32LE(0); // fix no read length size
+        if (compressionLevel) {
+            firstRead = in_buf.readUint32LE(0) >> compressionLevel;
+        }
+        var adjustedChunkOffset = nodes.subarray(3 * (firstRead & 0xff));
+        var subChunkRead1 = adjustedChunkOffset[1];
+        var subChunkRead2 = adjustedChunkOffset[2];
+        var subChunkRead0 = adjustedChunkOffset[0];
+        if (subChunkRead1 >> 7) {
+            var v13 = subChunkRead2;
+            var stride = subChunkRead0 | ((subChunkRead1 & 0x7F) << 8);
+        } else {
+            v13 = subChunkRead2 + 1;
+            var v15 = subChunkRead0 | ((subChunkRead1 & 0x7F) << 8);
+            for (let i = 1 << subChunkRead2; ; i = 2 * i2) {
+                var i2 = i;
+                var currentNode = nodes.subarray(3 * v15 + 3 * ((i & firstRead) != 0));
+                var nextNode = currentNode[1];
+                if (nextNode >> 7) {
+                    break;
+                }
+                v15 = ((nextNode & 0x7F) << 8) | currentNode[0];
+                ++v13;
+            }
+            stride = (((nextNode & 0x7F) << 8) | currentNode[0]) & 0xFFFF;
+        }
+        var v19 = compressionLevel + v13 >>> 0;
+        compressionLevel = v19 & 7;
+        in_buf = in_buf.subarray(v19 >> 3, in_buf.length);
+        sizeRead += v19 >> 3;
+        var op = stride & 0x300;
+        if (op == 0) {
+            out_buf[out_off + 0] = stride;
+            adjustedAmount = 1;
+            out_off += adjustedAmount
+            continue;
+        }
+        if (op == 0x100) {
+            if (repeatAmount > 0xFF) {
+                return 0;
+            }
+            if (repeatAmount) {
+                repeatAmount = (repeatAmount << 8) | (stride & 0xff);
+            }
+            else {
+                repeatAmount = (stride & 0xff);
+            }
+            adjustedAmount = 0;
+        } else {
+            if (op == 0x200) {
+                if (!repeatAmount) {
+                    repeatAmount = 1;
+                }
+                adjustedAmount = repeatAmount * (stride & 0xff);
+                if (index + adjustedAmount > out_len) {
+                    return 0;
+                }
+                switch (stride & 0xff )
+                {
+                    case 1:
+                        var counter1 = 0;
+                        do {
+                            out_buf[out_off + counter1++] = out_buf[out_off - 1];
+                        }
+                        while (counter1 < repeatAmount);
+                    break;
+                    case 2:
+                        var out_buf2 = out_buf;
+                        counter2 = 0;
+                        do {
+                            ++counter2;
+                            out_buf2[out_off] = out_buf[out_off - 2];
+                            out_buf2[out_off + 1] = out_buf[out_off - 1];
+                            out_buf2.subarray(2, out_buf2.length);
+                        }
+                        while (counter2 < repeatAmount);
+                        break;
+                    case 4:
+                        _out_buf4 = out_buf;
+                        counter4 = 0;
+                        do {
+                            ++counter4;
+                            _out_buf4[out_off + 0] = out_buf[out_off - 4];
+                            _out_buf4[out_off + 1] = out_buf[out_off - 3];
+                            _out_buf4[out_off + 2] = out_buf[out_off - 2];
+                            _out_buf4[out_off + 3] = out_buf[out_off - 1];
+                            _out_buf4.subarray(4, _out_buf4.length);
+                        }
+                        while (counter4 < repeatAmount);
+                        break;
+                }
+            } else {
+                if (op != 0x300) {
+                    out_off += adjustedAmount;
+                    continue;
+                }
+                adjustedAmount = stride & 0xff;
+                if (index + (stride & 0xff) > out_len )
+                {
+                    return 0;
+                }
+                var v26 = repeatAmount + ( stride & 0xff);
+                if (index < v26) {
+                    return 0;
+                }
+                //var inverse = out_buf[out_off - v26];
+                for (j = 0; j < (stride & 0xff); ++j )
+                {
+                    out_buf[out_off + j] = out_buf[out_off - v26 + j];
+                }
+            }
+            repeatAmount = 0;
+        }
+        // LABEL_50:
+        out_off += adjustedAmount;
+    }
+    return sizeRead + (compressionLevel != 0) == in_len;
+}
+
+/**
+ * decryptBuffer
+ * 
+ * @param {Buffer} inputBuffer 
+ * @param {number} disSize 
+ * @returns 
+ */
+function decryptBuffer(inputBuffer, disSize) {
+    if (inputBuffer.length < 36) throw new Error("Buffer too small");
+
+    const dv = new DataView(inputBuffer.buffer, inputBuffer.byteOffset, inputBuffer.byteLength);
+    // 1. PRNG pre-decrypt
+    let state = dv.getUint32(32, true);
+    for (let i = 0; i < inputBuffer.length; i++) {
+        // PRNG state: state = ((state * state) >> 11) + 0x1BA379EA   (all uint32 arithmetic)
+        const bigState = BigInt(state);
+        const squared = (bigState * bigState) & 0xFFFFFFFFn;        // multiply mod 2³²
+        const shifted = squared >> 11n;                             // >> 11 on the 32-bit result
+        state = Number((shifted + 0x1BA379EAn) & 0xFFFFFFFFn);      // add constant, keep uint32
+
+        // Subtract from current byte (exactly as *((_BYTE*)start + i) -= keyData1)
+        // Because destination is a byte, this is always mod 256
+        inputBuffer[i] = (inputBuffer[i] - (state & 0xFF)) & 0xFF;
+    }
+    // 2. Header parsing
+    const chunkELFStart   = dv.getUint32(0x00, true);
+    const metaStart       = dv.getUint32(0x08, true);
+    const metaCount       = dv.getUint32(0x0C, true);
+    const compTableStart  = dv.getUint32(0x10, true);
+    const compTableSize   = dv.getUint32(0x14, true);
+    const roundKeys2Start = dv.getUint32(0x18, true);
+    const roundKeysSize   = dv.getUint32(0x1C, true);
+
+    const metas = [];
+    
+    for (let i = 0; i < metaCount; i++) {
+        const off = metaStart + i * 12;
+        try {
+            metas.push({
+                srcStart:  dv.getUint32(off, true),
+                destStart: dv.getUint32(off + 4, true),
+                srcSize:   dv.getUint16(off + 8, true),
+                destSize:  dv.getUint16(off + 10, true)
+            });
+        } catch (error) {
+            console.log(error);
+
+            console.log(inputBuffer);
+        }
+    }
+    // 3. Final ELF buffer
+    let totalDestSize = disSize;
+    for (let i = 0; i < metas.length; i++) {
+        const m = metas[i];
+
+        totalDestSize = Math.max(totalDestSize, m.destStart + m.destSize);
+    }
+
+    const elf = Buffer.alloc(totalDestSize);
+    // 4. Sub regions (post-PRNG)
+    const huffData = compTableSize > 0 ? inputBuffer.subarray(compTableStart, compTableStart + compTableSize) : null;
+    const sboxData = roundKeysSize > 0 ? inputBuffer.subarray(roundKeys2Start, roundKeys2Start + roundKeysSize) : null;
+    // 5. MAIN DECODE LOOP
+    if (!huffData && !sboxData) {
+        // Unencrypted fast path
+        for (let i = 0; i < metas.length; i++) {
+            const m = metas[i];
+
+            const copyBuffer = inputBuffer.subarray(chunkELFStart + m.srcStart, chunkELFStart + m.srcStart + m.srcSize);
+
+            elf.set(copyBuffer.subarray(0, m.destSize), m.destStart);
+        }
+
+        return [elf, true];
+    }
+
+    for (let i = 0; i < metas.length; i++) {
+        const m = metas[i];
+        // Copy the source slice into the temp buffer (exactly as in the C pseudocode)
+        const srcData = inputBuffer.subarray(
+            chunkELFStart + m.srcStart,
+            chunkELFStart + m.srcStart + m.srcSize
+        );
+        // AES stage – operates ONLY on the first srcSize bytes of the temp buffer
+        if (sboxData && srcData.byteLength >= 16) {
+            console.log("src pre encrypt ", srcData);
+
+            if (!decrypt(srcData, sboxData)) {
+                console.warn("~~ AES failed on slice");
+                return [inputBuffer, false];
+            }
+
+            console.log("src post encrypt", srcData);
+        }
+        // Write to final ELF
+        if (m.srcSize === m.destSize) {
+            // Direct copy of decrypted temp
+            srcData.copy(elf, m.destStart, 0, m.destSize);
+        } else {
+            // Decompression case – pass the decrypted temp (first srcSize bytes) as bitstream
+            const tmpBuffer = Buffer.alloc(Math.max(m.srcSize, 32));
+
+            srcData.copy(tmpBuffer, 0, 0, m.srcSize);
+
+            const destView = elf.subarray(m.destStart, m.destStart + m.destSize);
+
+            console.log("src pre decomp  ", srcData);
+
+            if (!huffRLE(huffData, tmpBuffer, m.srcSize, destView)) {
+                console.warn("~~ Decompression failed on slice");
+                console.warn("src post decomp ", destView);
+                return [inputBuffer, false];
+            } else {
+                console.log("Decompression passed!");
+                console.log("src post decomp ", destView);
+            }
+        }
+    }
+
+    return [elf, true];
+}
+
+function runLibSoDecry() {
+    const encryptedData = fs.readFileSync('./libs/lib__57d5__.so');
+
+    var didFinish = true;
+
+    for (let i = 0; i < decryList.length; i++) {
+        const entry = decryList[i];
+        console.log(entry.name);
+        const buffer = encryptedData.subarray(entry.start, entry.start + entry.size);
+
+        const [result, success] = decryptBuffer(buffer, entry.disSize, i);
+
+        console.log(success ? "✓ Decrypted" : "✗ Failed", entry.name);
+        fs.writeFileSync(`./libs/_lib__57d5__${entry.start}_section_${entry.name}${success ? "" : "_encrypted"}.bin`, result);
+
+         if (!success) {
+            didFinish = false;
+            break;
+        }
+
+        for (let a = entry.start; a < buffer.length; a++) {
+            encryptedData[a] = buffer[a];
+        }
+    }
+
+    if(didFinish){
+        fs.writeFileSync('./libs/lib__57d5__decry.so', encryptedData);
+
+        console.log("✅ Full decrypted .so written!");
+    }
+}
+
+runLibSoDecry();

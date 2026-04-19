@@ -1,0 +1,73 @@
+//------------------------------------------------
+//--- 010 Editor v16.0.4 Binary Template
+//
+//      File: lib__57d5__masterChunks.bt
+//   Authors: Hellacopters
+//   Version: v1.0.0
+//   Purpose: Research
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+//  sudo code for decrypting this block
+//  must be done before this struct is readable
+
+//  keyData1 = blockStart[8]; // read as int, 32 bytes off from the start AKA keyData1
+//  start = blockStart;       // starting pointer
+//  len = blockLen;           // 
+//  for ( i = 0; i < len; ++i )
+//  {
+//    keyData1 = ((keyData1 * keyData1) >> 11) + 0x1BA379EA;
+//    *((_BYTE *)start + i) -= keyData1;
+//  }
+
+// could be a fork of this https://github.com/cyberfined/cryload
+
+typedef struct{
+    uint32 srcStart;
+    uint32 destStart;
+    uint16 srcSize;
+    uint16 destSize;
+} metaELFStruc;
+
+typedef struct (uint32 size){
+    byte ELFSliceData[size];
+} metaHolder<bgcolor=cLtGreen>;
+
+typedef struct (uint32 roundKeysSize){
+    uint16 keySizeBits<bgcolor=cLtRed>;
+    uint16 rounds<bgcolor=cLtRed>;
+    byte roundKeys[roundKeysSize - 4]<bgcolor=cLtRed>;
+}huffRLEBlock;
+
+struct{                            // int index
+    uint32 chunkELFStart;          // 0 first chunk, packed in slices that the metaStruct gives start and sizes for
+    uint32 chunkELFSize;           // 1 total size of packed chunk
+    uint32 chunkELFSliceMetaStart; // 2 Start of meta data on slices within elf chunk
+    uint32 chunkELFSliceMetaCount; // 3 number of slices in chunkELF
+    uint32 compTableStart;         // 4 (compTableSize != 0) Huffman-coded command stream + RLE decompressor
+    uint32 compTableSize;          // 5 
+    uint32 roundKeysStart;         // 6 (roundKeysSize != 0) AES roundKeys for T-table AES + CBC !FULL_UNROLL https://android.googlesource.com/platform/external/qemu/+/emu-master-dev/crypto/aes.c#1415 
+    uint32 roundKeysSize;          // 7 roundKeys size (decrypts when != 0)
+    uint32 keyData1;               // 8 area where the encryption key is
+    uint32 keyData2;               // 9 area where the encryption key is
+    byte gap28[8];                 // 10 gap
+    FSeek(chunkELFSliceMetaStart);
+    metaELFStruc ELFchunkMeta[chunkELFSliceMetaCount]<bgcolor=cLtYellow>;
+    for(local int i<hidden=true> = 0; i < chunkELFSliceMetaCount; i++){
+        FSeek(chunkELFStart + ELFchunkMeta[i].srcStart);
+        
+        metaHolder ELFSlice(ELFchunkMeta[i].srcSize);
+    }
+    FSeek(chunkELFStart);
+    if(compTableSize){
+        FSeek(compTableStart);
+        byte compTable[compTableSize]<bgcolor=cLtBlue>;
+    }    
+    if(roundKeysSize){
+        FSeek(roundKeysStart);
+        huffRLEBlock huffRLEData(roundKeysSize);
+    }   
+}chunkParse<open=true>;
