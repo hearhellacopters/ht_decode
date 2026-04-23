@@ -13,6 +13,7 @@
 
 //  sudo code for decrypting this block
 //  must be done before this struct is readable
+//  Linear Congruential Generator (LCG)
 
 //  keyData1 = blockStart[8]; // read as int, 32 bytes off from the start AKA keyData1
 //  start = blockStart;       // starting pointer
@@ -40,7 +41,7 @@ typedef struct (uint32 roundKeysSize){
     uint16 keySizeBits<bgcolor=cLtRed>;
     uint16 rounds<bgcolor=cLtRed>;
     byte roundKeys[roundKeysSize - 4]<bgcolor=cLtRed>;
-}huffRLEBlock;
+}keyRoundsBlock;
 
 struct{                            // int index
     uint32 chunkELFStart;          // 0 first chunk, packed in slices that the metaStruct gives start and sizes for
@@ -48,8 +49,8 @@ struct{                            // int index
     uint32 chunkELFSliceMetaStart; // 2 Start of meta data on slices within elf chunk
     uint32 chunkELFSliceMetaCount; // 3 number of slices in chunkELF
     uint32 compTableStart;         // 4 (compTableSize != 0) Huffman-coded command stream + RLE decompressor
-    uint32 compTableSize;          // 5 
-    uint32 roundKeysStart;         // 6 (roundKeysSize != 0) AES roundKeys for T-table AES + CBC !FULL_UNROLL https://android.googlesource.com/platform/external/qemu/+/emu-master-dev/crypto/aes.c#1415 
+    uint32 compTableSize;          // 5 Huffman-REL data (decomps when != 0)
+    uint32 roundKeysStart;         // 6 (roundKeysSize != 0) AES roundKeys for T-table AES + CBC !FULL_UNROLL https://fastcrypto.org/front/misc/rijndael-alg-fst.c 
     uint32 roundKeysSize;          // 7 roundKeys size (decrypts when != 0)
     uint32 keyData1;               // 8 area where the encryption key is
     uint32 keyData2;               // 9 area where the encryption key is
@@ -64,10 +65,10 @@ struct{                            // int index
     FSeek(chunkELFStart);
     if(compTableSize){
         FSeek(compTableStart);
-        byte compTable[compTableSize]<bgcolor=cLtBlue>;
+        byte huffRLEData[compTableSize]<bgcolor=cLtBlue>;
     }    
     if(roundKeysSize){
         FSeek(roundKeysStart);
-        huffRLEBlock huffRLEData(roundKeysSize);
+        keyRoundsBlock keyData(roundKeysSize);
     }   
 }chunkParse<open=true>;

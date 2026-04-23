@@ -38,7 +38,7 @@ struct{                            // int index
     uint32 chunkELFSliceMetaStart; // 2 Start of meta data on slices within elf chunk
     uint32 chunkELFSliceMetaCount; // 3 number of slices in chunkELF
     uint32 compTableStart;         // 4 (compTableSize != 0) Huffman-coded command stream + RLE decompressor
-    uint32 compTableSize;          // 5 
+    uint32 compTableSize;          // 5 Huffman-REL data (decomps when != 0)
     uint32 roundKeysStart;         // 6 (roundKeysSize != 0) AES roundKeys for T-table AES + CBC !FULL_UNROLL https://android.googlesource.com/platform/external/qemu/+/emu-master-dev/crypto/aes.c#1415 
     uint32 roundKeysSize;          // 7 roundKeys size (decrypts when != 0)
     uint32 keyData1;               // 8 area where the encryption key is
@@ -54,11 +54,11 @@ struct{                            // int index
     FSeek(chunkELFStart);
     if(compTableSize){
         FSeek(compTableStart);
-        byte compTable[compTableSize];
+        byte huffRLEData[compTableSize];
     }    
     if(roundKeysSize){
         FSeek(roundKeysStart);
-        huffRLEBlock huffRLEData(roundKeysSize);
+        keyRoundsBlock keyData(roundKeysSize);
     }
 } chunkParse;
 
@@ -77,7 +77,7 @@ typedef struct (uint32 roundKeysSize){
     uint16 keySizeBits;
     uint16 rounds;
     byte roundKeys[roundKeysSize - 4];
-} huffRLEBlock;
+} keyRoundsBlock;
 ```
 
 If the compiled file doesn't start with ELF magics, it is likely a headerless ELF file with the following headers (found in `lib__57d5__tablesHeaderlessELF.bt`)
@@ -113,7 +113,7 @@ ht_decode:
 
 ### Sub-functions:
 - **`0xF32`**: Decrypt (inner decryption logic)
-- **`0xFF8`**: `AES_decrypt` - AES CBC decryption with T-tables
+- **`0xFF8`**: `AES_decrypt` - AES CBC decryption with T-tables (likely [rijndael-alg-fst](https://fastcrypto.org/front/misc/rijndael-alg-fst.c))
 - **`0xD20`**: `huffRLE` - Huffman RLE decompression
 
 Pseudocode:
@@ -188,25 +188,25 @@ BOOL __fastcall ht_decode(
 
 int __fastcall decrypt(ELFSlice *ELFBufferSlice, decryptionRoundKeys *inputRoundKeys)
 {
-  _DWORD *tmpELFBuffer; // r4
-  roundKeys *roundKeys; // r6
+  unsigned int *tmpELFBuffer; // r4
+  unsigned int *roundKeys; // r6
   int keySizeBits; // r3
   int rounds; // r3
   int processingFailedFlag; // r5
-  _DWORD *currentBuffer; // r7
+  unsigned int *currentBuffer; // r7
   unsigned int roundsCheck; // r2
-  _DWORD *advancedBuffer; // r5
-  _DWORD *tmpSwitch; // r3
+  unsigned int *advancedBuffer; // r5
+  unsigned int *tmpSwitch; // r3
   unsigned int srcELFSliceSize; // [sp+0h] [bp-2Ch]
   signed int currentRound; // [sp+0h] [bp-2Ch]
   signed int totalRounds; // [sp+4h] [bp-28h]
-  _DWORD inputProcessingBuffer[8]; // [sp+8h] [bp-24h] BYREF
+  unsigned int inputProcessingBuffer[8]; // [sp+8h] [bp-24h] BYREF
 
   if ( !ELFBufferSlice )
   {
     return 0;
   }
-  tmpELFBuffer = ELFBufferSlice->tmpELFSliceOffset;
+  tmpELFBuffer = (unsigned int *)ELFBufferSlice->tmpELFSliceOffset;
   srcELFSliceSize = ELFBufferSlice->srcELFSliceSize;
   if ( !inputRoundKeys )
   {
@@ -260,7 +260,7 @@ LABEL_12:
         roundKeys->roundkeys,                   // round keys start
         roundKeys->rounds,                      // rounds
         (unsigned __int8 *)advancedBuffer,      // input
-        tmpELFBuffer);                          // output
+        (unsigned __int8 *)tmpELFBuffer);                          // output
       *tmpELFBuffer ^= *currentBuffer;          // CBC xor
       tmpELFBuffer[1] ^= currentBuffer[1];
       tmpELFBuffer[2] ^= currentBuffer[2];
@@ -277,14 +277,14 @@ LABEL_12:
   return processingFailedFlag;
 }
 
-void __fastcall AES_decrypt(_DWORD *rk, int keyLength, unsigned __int8 *input, _BYTE *output)
+void __fastcall AES_decrypt(unsigned int  *rk, int keyLength, unsigned __int8 *input, unsigned __int8 *output)
 {
   unsigned int s3; // r5
-  _DWORD *_rk; // r4
-  int _rk7; // r7
+  unsigned int *_rk; // r4
+  unsigned int _rk7; // r7
   unsigned int hbcc; // r6
   unsigned int t3; // r12
-  _DWORD *outPtr; // r0
+  unsigned int *outPtr; // r0
   int o0; // r5
   int o1; // r5
   int o2; // r5

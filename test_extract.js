@@ -241,7 +241,7 @@ const AES_Td1 = new Uint32Array([
     0x58704868, 0x198F45FD, 0x8794DE6C, 0xB7527BF8, 0x23AB73D3, 0xE2724B02, 0x57E31F8F, 0x2A6655AB,
     0x07B2EB28, 0x032FB5C2, 0x9A86C57B, 0xA5D33708, 0xF2302887, 0xB223BFA5, 0xBA02036A, 0x5CED1682,
     0x2B8ACF1C, 0x92A779B4, 0xF0F307F2, 0xA14E69E2, 0xCD65DAF4, 0xD50605BE, 0x1FD13462, 0x8AC4A6FE,
-    0x9D342E53, 0xA0A2F355, 0x32058AE1, 0x75A4F6EB, 0x390B83EC, 0xAA4060EF, 0x9F065E71, 0x51BD6E10,
+    0x9D342E53, 0xA0A2F355, 0x32058AE1, 0x75A4F6EB, 0x390B83EC, 0xAA4060EF, 0x065E719F, 0x51BD6E10,
     0xF93E218A, 0x3D96DD06, 0xAEDD3E05, 0x464DE6BD, 0xB591548D, 0x0571C45D, 0x6F0406D4, 0xFF605015,
     0x241998FB, 0x97D6BDE9, 0xCC894043, 0x7767D99E, 0xBDB0E842, 0x8807898B, 0x38E7195B, 0xDB79C8EE,
     0x47A17C0A, 0xE97C420F, 0xC9F8841E, 0x00000000, 0x83098086, 0x48322BED, 0xAC1E1170, 0x4E6C5A72,
@@ -273,11 +273,11 @@ const AES_Td2 = new Uint32Array([
     0x5FE7038F, 0x9C951592, 0x7AEBBF6D, 0x59DA9552, 0x832DD4BE, 0x21D35874, 0x692949E0, 0xC8448EC9,
     0x896A75C2, 0x7978F48E, 0x3E6B9958, 0x71DD27B9, 0x4FB6BEE1, 0xAD17F088, 0xAC66C920, 0x3AB47DCE,
     0x4A1863DF, 0x3182E51A, 0x33609751, 0x7F456253, 0x77E0B164, 0xAE84BB6B, 0xA01CFE81, 0x2B94F908,
-    0x68587048, 0xFD198F45, 0x6C8794DE, 0xF8B7527B, 0xD323AB73, 0x024B02E2, 0x8F57E31F, 0xAB2A6655,
+    0x68587048, 0xFD198F45, 0x6C8794DE, 0xF8B7527B, 0xD323AB73, 0x02E2724B, 0x8F57E31F, 0xAB2A6655,
     0x2807B2EB, 0xC2032FB5, 0x7B9A86C5, 0x08A5D337, 0x87F23028, 0xA5B223BF, 0x6ABA0203, 0x825CED16,
     0x1C2B8ACF, 0xB492A779, 0xF2F0F307, 0xE2A14E69, 0xF4CD65DA, 0xBED50605, 0x621FD134, 0xFE8AC4A6,
     0x539D342E, 0x55A0A2F3, 0xE132058A, 0xEB75A4F6, 0xEC390B83, 0xEFAA4060, 0x9F065E71, 0x1051BD6E,
-    0x8AF93E21, 0x063DD96D, 0x05AEDD3E, 0xBD464DE6, 0x8DB59154, 0x5D0571C4, 0xD46F0406, 0x15FF6050,
+    0x8AF93E21, 0x063D96DD, 0x05AEDD3E, 0xBD464DE6, 0x8DB59154, 0x5D0571C4, 0xD46F0406, 0x15FF6050,
     0xFB241998, 0xE997D6BD, 0x43CC8940, 0x9E7767D9, 0x42BDB0E8, 0x8B880789, 0x5B38E719, 0xEEDB79C8,
     0x0A47A17C, 0x0FE97C42, 0x1EC9F884, 0x00000000, 0x86830980, 0xED48322B, 0x70AC1E11, 0x724E6C5A,
     0xFFFBFD0E, 0x38560F85, 0xD51E3DAE, 0x3927362D, 0xD9640A0F, 0xA621685C, 0x54D19B5B, 0x2E3A2436,
@@ -287,7 +287,7 @@ const AES_Td2 = new Uint32Array([
     0x29768B43, 0xC6DCCB23, 0xFC68B6ED, 0xF163B8E4, 0xDCCAD731, 0x85104263, 0x22401397, 0x112084C6,
     0x247D854A, 0x3DF8D2BB, 0x3211AEF9, 0xA16DC729, 0x2F4B1D9E, 0x30F3DCB2, 0x52EC0D86, 0xE3D077C1,
     0x166C2BB3, 0xB999A970, 0x48FA1194, 0x642247E9, 0x8CC4A8FC, 0x3F1AA0F0, 0x2CD8567D, 0x90EF2233,
-    0x4EC78749, 0xD1C1D938, 0xA2FE8CCA, 0x0BB3698D, 0x81CFA6F5, 0xDE28A57A, 0x8E26DAB7, 0xBFA43FAD,
+    0x4EC78749, 0xD1C1D938, 0xA2FE8CCA, 0x0B3698D4, 0x81CFA6F5, 0xDE28A57A, 0x8E26DAB7, 0xBFA43FAD,
     0x9DE42C3A, 0x920D5078, 0xCC9B6A5F, 0x4662547E, 0x13C2F68D, 0xB8E890D8, 0xF75E2E39, 0xAFF582C3,
     0x80BE9F5D, 0x937C69D0, 0x2DA96FD5, 0x12B3CF25, 0x993BC8AC, 0x7DA71018, 0x636EE89C, 0xBB7BDB3B,
     0x7809CD26, 0x18F46E59, 0xB701EC9A, 0x9AA8834F, 0x6E65E695, 0xE67EAAFF, 0xCF0821BC, 0xE8E6EF15,
@@ -372,10 +372,20 @@ const AES_Td4 = new Uint32Array([
 ]);
 
 /* Byte extraction macros */
-const BYTE1 = (x) => (x >>> 8) & 0xFF;
-const BYTE2 = (x) => (x >>> 16) & 0xFF;
 const HIBYTE = (x) => (x >>> 24) & 0xFF;
-const BYTE0 = (x) => x & 0xFF;
+const BYTE2 =  (x) => (x >>> 16) & 0xFF;
+const BYTE1 =  (x) => (x >>> 8) & 0xFF;
+const BYTE0 =  (x) =>  x & 0xFF;
+const GETU32 = (ar, off) => {
+    return ((ar[off + 0] << 24) ^ (ar[off + 1] << 16) ^ (ar[off + 2] <<  8) ^ (ar[off + 3])) >>> 0;
+}
+
+const PUTU32 = (ar, off, val32)=>{ 
+    ar[off + 0] = (val32 >>> 24) & 0xFF; 
+    ar[off + 1] = (val32 >>> 16) & 0xFF; 
+    ar[off + 2] = (val32 >>>  8) & 0xFF; 
+    ar[off + 3] = (val32       ) & 0xFF;
+}
 
 /**
 * AES_decrypt
@@ -386,76 +396,104 @@ const BYTE0 = (x) => x & 0xFF;
 * @param {Buffer} output 
 */
 function AES_decrypt(rk, keyLength, input, output) {
-    var _rk, t0, t2, t1, t3, hbcc, _rk7;
-    let r = keyLength >> 1;
-    let s0 = input[3] ^ rk[0] ^ (input[0] << 24) ^ (input[1] << 16) ^ (input[2] << 8);
-    let s1 = input[7] ^ rk[1] ^ (input[4] << 24) ^ (input[5] << 16) ^ (input[6] << 8);
-    let s2 = input[11] ^ rk[2] ^ (input[8] << 24) ^ (input[9] << 16) ^ (input[10] << 8);
-    let s3 = input[15] ^ rk[3] ^ (input[12] << 24) ^ (input[13] << 16) ^ (input[14] << 8);
-    for (_rk = rk;
-        ;
-        s3 = AES_Td0[HIBYTE(t3)] ^ AES_Td3[BYTE0(t0)] ^ _rk[3] ^ AES_Td1[BYTE2(t2)] ^ AES_Td2[BYTE1(t1)]
-    ) {
-        t0 = _rk[4] ^ AES_Td3[BYTE0(s1)] ^ AES_Td0[HIBYTE(s0)] ^ AES_Td1[BYTE2(s3)] ^ AES_Td2[BYTE1(s2)];
-        t1 = _rk[5] ^ AES_Td3[BYTE0(s2)] ^ AES_Td0[HIBYTE(s1)] ^ AES_Td1[BYTE2(s0)] ^ AES_Td2[BYTE1(s3)];
-        t2 = _rk[6] ^ AES_Td3[BYTE0(s3)] ^ AES_Td0[HIBYTE(s2)] ^ AES_Td1[BYTE2(s1)] ^ AES_Td2[BYTE1(s0)];
-        _rk7 = _rk[7];
-        _rk += 8;
-        hbcc = HIBYTE(t0);
-        t3 = AES_Td3[BYTE0(s0)] ^ AES_Td0[HIBYTE(s3)] ^ _rk7 ^ AES_Td1[BYTE2(s2)] ^ AES_Td2[BYTE1(s1)];
-        if (!--r) {
+    var s0, s1, s2, s3, t0, t1, t2, t3;
+    var r = keyLength >> 1;
+    var rk_offset = 0;
+    s0 = GETU32(input,  0) ^ rk[rk_offset+0];
+    s1 = GETU32(input,  4) ^ rk[rk_offset+1];
+    s2 = GETU32(input,  8) ^ rk[rk_offset+2];
+    s3 = GETU32(input, 12) ^ rk[rk_offset+3];
+
+    for (;;) {
+        t0 = 
+            AES_Td0[(s0 >> 24)       ] ^
+            AES_Td1[(s3 >> 16) & 0xff] ^
+            AES_Td2[(s2 >>  8) & 0xff] ^
+            AES_Td3[(s1      ) & 0xff] ^
+            rk[rk_offset+4];
+        t1 = 
+            AES_Td0[(s1 >> 24)       ] ^
+            AES_Td1[(s0 >> 16) & 0xff] ^
+            AES_Td2[(s3 >>  8) & 0xff] ^
+            AES_Td3[(s2      ) & 0xff] ^
+            rk[rk_offset+5];
+        t2 =
+            AES_Td0[(s2 >> 24)       ] ^
+            AES_Td1[(s1 >> 16) & 0xff] ^
+            AES_Td2[(s0 >>  8) & 0xff] ^
+            AES_Td3[(s3      ) & 0xff] ^
+            rk[rk_offset+6];
+        t3 =
+            AES_Td0[(s3 >> 24)       ] ^
+            AES_Td1[(s2 >> 16) & 0xff] ^
+            AES_Td2[(s1 >>  8) & 0xff] ^
+            AES_Td3[(s0      ) & 0xff] ^
+            rk[rk_offset+7];
+        rk_offset += 8;
+        if (--r == 0) {
             break;
         }
-        s0 = AES_Td3[BYTE0(t1)] ^ AES_Td0[hbcc] ^ _rk[0] ^ AES_Td1[BYTE2(t3)] ^ AES_Td2[BYTE1(t2)];
-        s1 = AES_Td0[HIBYTE(t1)] ^ AES_Td3[BYTE0(t2)] ^ _rk[1] ^ AES_Td1[BYTE2(t0)] ^ AES_Td2[BYTE1(t3)];
-        s2 = AES_Td0[HIBYTE(t2)] ^ AES_Td3[BYTE0(t3)] ^ _rk[2] ^ AES_Td1[BYTE2(t1)] ^ AES_Td2[BYTE1(t0)];
+        s0 =
+            AES_Td0[(t0 >> 24)       ] ^
+            AES_Td1[(t3 >> 16) & 0xff] ^
+            AES_Td2[(t2 >>  8) & 0xff] ^
+            AES_Td3[(t1      ) & 0xff] ^
+            rk[rk_offset+0];
+        s1 =
+            AES_Td0[(t1 >> 24)       ] ^
+            AES_Td1[(t0 >> 16) & 0xff] ^
+            AES_Td2[(t3 >>  8) & 0xff] ^
+            AES_Td3[(t2      ) & 0xff] ^
+            rk[rk_offset+1];
+        s2 =
+            AES_Td0[(t2 >> 24)       ] ^
+            AES_Td1[(t1 >> 16) & 0xff] ^
+            AES_Td2[(t0 >>  8) & 0xff] ^
+            AES_Td3[(t3      ) & 0xff] ^
+            rk[rk_offset+2];
+        s3 =
+            AES_Td0[(t3 >> 24)       ] ^
+            AES_Td1[(t2 >> 16) & 0xff] ^
+            AES_Td2[(t1 >>  8) & 0xff] ^
+            AES_Td3[(t0      ) & 0xff] ^
+            rk[rk_offset+3];
     }
 
-    var outPtr = rk.subarray(8 * (keyLength >> 1), rk.length);
-    var o0 = BYTE0(AES_Td4[BYTE0(t1)])
-        ^ (HIBYTE(AES_Td4[hbcc]) << 24)
-        ^ outPtr[0]
-        ^ AES_Td4[BYTE2(t3)]
-        & 0xFF0000
-        ^ AES_Td4[BYTE1(t2)]
-        & 0xFF00;
-    output[0] = HIBYTE(o0);
-    output[1] = BYTE2(o0);
-    output[2] = BYTE1(o0);
-    output[3] = o0;
-    var o1 = outPtr[1]
-        ^ BYTE0(AES_Td4[BYTE0(t2)])
-        ^ (HIBYTE(AES_Td4[HIBYTE(t1)]) << 24)
-        ^ AES_Td4[BYTE2(t0)]
-        & 0xFF0000
-        ^ AES_Td4[BYTE1(t3)]
-        & 0xFF00;
-    output[4] = HIBYTE(o1);
-    output[5] = BYTE2(o1);
-    output[6] = BYTE1(o1);
-    output[7] = o1;
-    var o2 = outPtr[2]
-        ^ BYTE0(AES_Td4[BYTE0(t3)])
-        ^ (HIBYTE(AES_Td4[HIBYTE(t2)]) << 24)
-        ^ AES_Td4[BYTE2(t1)]
-        & 0xFF0000
-        ^ AES_Td4[BYTE1(t0)]
-        & 0xFF00;
-    output[8] = HIBYTE(o2);
-    output[9] = BYTE2(o2);
-    output[10] = BYTE1(o2);
-    output[11] = o2;
-    var o3 = AES_Td4[BYTE1(t1)]
-        & 0xFF00
-        ^ AES_Td4[BYTE2(t2)]
-        & 0xFF0000
-        ^ BYTE0(AES_Td4[BYTE0(t0)])
-        ^ (HIBYTE(AES_Td4[HIBYTE(t3)]) << 24)
-        ^ outPtr[3];
-    output[12] = HIBYTE(o3);
-    output[13] = BYTE2(o3);
-    output[14] = BYTE1(o3);
-    output[15] = o3;
+    s0 =
+        (AES_Td4[(t0 >> 24)       ] & 0xff000000) ^
+        (AES_Td4[(t3 >> 16) & 0xff] & 0x00ff0000) ^
+        (AES_Td4[(t2 >>  8) & 0xff] & 0x0000ff00) ^
+        (AES_Td4[(t1      ) & 0xff] & 0x000000ff) ^
+   		rk[rk_offset+0];
+
+    PUTU32(output, 0, s0);
+
+    s1 =
+        (AES_Td4[(t1 >> 24)       ] & 0xff000000) ^
+        (AES_Td4[(t0 >> 16) & 0xff] & 0x00ff0000) ^
+        (AES_Td4[(t3 >>  8) & 0xff] & 0x0000ff00) ^
+        (AES_Td4[(t2      ) & 0xff] & 0x000000ff) ^
+   		rk[rk_offset+1];
+
+    PUTU32(output, 4, s1);
+
+    s2 =
+        (AES_Td4[(t2 >> 24)       ] & 0xff000000) ^
+        (AES_Td4[(t1 >> 16) & 0xff] & 0x00ff0000) ^
+        (AES_Td4[(t0 >>  8) & 0xff] & 0x0000ff00) ^
+        (AES_Td4[(t3      ) & 0xff] & 0x000000ff) ^
+   		rk[rk_offset+2];
+
+    PUTU32(output, 8, s2);
+
+    s3 =
+        (AES_Td4[(t3 >> 24)       ] & 0xff000000) ^
+        (AES_Td4[(t2 >> 16) & 0xff] & 0x00ff0000) ^
+        (AES_Td4[(t1 >>  8) & 0xff] & 0x0000ff00) ^
+        (AES_Td4[(t0      ) & 0xff] & 0x000000ff) ^
+   		rk[rk_offset+3];
+
+    PUTU32(output, 12, s3);
 }
 
 /**
@@ -474,10 +512,15 @@ function decrypt(ELFBufferSlice, inputRoundKeys) {
 
     let rounds = 0;
 
-    if (keySizeBits === 192) rounds = 12;
-    else if (keySizeBits !== 256 && keySizeBits !== 128) return 0;
-    else if (keySizeBits === 256) rounds = 14;
-    else rounds = 10; // 128
+    if (keySizeBits === 192) {
+        rounds = 12;
+    } else if (keySizeBits !== 256 && keySizeBits !== 128) {
+        return 0;
+    } else if (keySizeBits === 256) {
+        rounds = 14;
+    } else {
+        rounds = 10; // 128
+    }
 
     if (rounds == inputRoundKeys.readUInt16LE(2)) {
 
@@ -495,13 +538,16 @@ function decrypt(ELFBufferSlice, inputRoundKeys) {
 
         const roundKeys = inputRoundKeys.subarray(4, inputRoundKeys.length);
 
-        const rk = new Uint32Array(roundKeys.buffer, roundKeys.byteOffset, roundKeys.length / 4);
+        const rk = new Uint32Array(roundKeys.length / 4);
+
+        for (let i = 0; i < rk.length; i++) {
+            rk[i] = roundKeys.readUint32LE(i*4);
+        }
 
         while (currentRound < totalRounds) {
-            advancedBuffer.writeUint32LE(tmpELFBuffer.readUint32LE(0), 0);
-            advancedBuffer.writeUint32LE(tmpELFBuffer.readUint32LE(4), 4);
-            advancedBuffer.writeUint32LE(tmpELFBuffer.readUint32LE(8), 8);
-            advancedBuffer.writeUint32LE(tmpELFBuffer.readUint32LE(12), 12);
+            for (let i = 0; i < 4; i++) {
+                advancedBuffer.writeUint32LE(tmpELFBuffer.readUint32LE(i * 4), i * 4);
+            }
 
             AES_decrypt(
                 rk,
@@ -510,18 +556,16 @@ function decrypt(ELFBufferSlice, inputRoundKeys) {
                 tmpELFBuffer
             );
 
-            tmpELFBuffer.writeUint32LE((tmpELFBuffer.readUint32LE(0) ^ currentBuffer.readUint32LE(0)) >>> 0, 0);
-            tmpELFBuffer.writeUint32LE((tmpELFBuffer.readUint32LE(4) ^ currentBuffer.readUint32LE(4)) >>> 0, 4);
-            tmpELFBuffer.writeUint32LE((tmpELFBuffer.readUint32LE(8) ^ currentBuffer.readUint32LE(8)) >>> 0, 8);
-            tmpELFBuffer.writeUint32LE((tmpELFBuffer.readUint32LE(12) ^ currentBuffer.readUint32LE(12)) >>> 0, 12);
+            for (let i = 0; i < 4; i++) {
+                tmpELFBuffer.writeUint32LE((tmpELFBuffer.readUint32LE(i * 4) ^ currentBuffer.readUint32LE(i * 4)) >>> 0, i * 4);
+            }
             // advance buffer
-            tmpELFBuffer = tmpELFBuffer.subarray(16, tmpELFBuffer.byteLength);
+            tmpELFBuffer = tmpELFBuffer.subarray(16, tmpELFBuffer.length);
             ++currentRound;
             var tempSwitch = currentBuffer;
             currentBuffer = advancedBuffer;
             advancedBuffer = tempSwitch;
         }
-
         return 1;
     }
 
@@ -531,10 +575,11 @@ function decrypt(ELFBufferSlice, inputRoundKeys) {
 /**
  * huffRLE
  * 
- * @param {Buffer} nodes 
- * @param {Buffer} in_buf 
- * @param {Buffer} out_buf 
- * @returns 
+ * @param {Buffer} nodes - Huffman table nodes (3 bytes per entry)
+ * @param {Buffer} in_buf - Compressed input buffer
+ * @param {number} in_len - Length of compressed data to read
+ * @param {Buffer} out_buf - Output buffer for decompressed data
+ * @returns {boolean} Success or failure
  */
 function huffRLE(nodes, in_buf, in_len, out_buf) {
     const out_len = out_buf.byteLength;
@@ -757,7 +802,7 @@ function decryptBuffer(inputBuffer, disSize) {
             console.log("src pre encrypt ", srcData);
 
             if (!decrypt(srcData, sboxData)) {
-                console.warn("~~ AES failed on slice");
+                console.log("~~ AES failed on slice");
                 return [inputBuffer, false];
             }
 
@@ -778,8 +823,8 @@ function decryptBuffer(inputBuffer, disSize) {
             console.log("src pre decomp  ", srcData);
 
             if (!huffRLE(huffData, tmpBuffer, m.srcSize, destView)) {
-                console.warn("~~ Decompression failed on slice");
-                console.warn("src post decomp ", destView);
+                console.log("~~ Decompression failed on slice");
+                console.log("src post decomp ", destView);
                 return [inputBuffer, false];
             } else {
                 console.log("Decompression passed!");
