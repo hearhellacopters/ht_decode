@@ -1,4 +1,5 @@
 const fs = require('fs');
+const crypto = require('crypto');
 
 // locations for decryption and extraction
 const decryList = [
@@ -193,10 +194,7 @@ const decryList = [
     }
 ];
 
-/* ================================================================
-   EXACT AES T-TABLES FROM YOUR IDA PRO DUMP
-   ================================================================ */
-const AES_Td0 = new Uint32Array([
+const Td0 = new Uint32Array([
     0x51F4A750, 0x7E416553, 0x1A17A4C3, 0x3A275E96, 0x3BAB6BCB, 0x1F9D45F1, 0xACFA58AB, 0x4BE30393,
     0x2030FA55, 0xAD766DF6, 0x88CC7691, 0xF5024C25, 0x4FE5D7FC, 0xC52ACBD7, 0x26354480, 0xB562A38F,
     0xDEB15A49, 0x25BA1B67, 0x45EA0E98, 0x5DFEC0E1, 0xC32F7502, 0x814CF012, 0x8D4697A3, 0x6BD3F9C6,
@@ -231,7 +229,7 @@ const AES_Td0 = new Uint32Array([
     0x39A80171, 0x080CB3DE, 0xD8B4E49C, 0x6456C190, 0x7BCB8461, 0xD532B670, 0x486C5C74, 0xD0B85742
 ]);
 
-const AES_Td1 = new Uint32Array([
+const Td1 = new Uint32Array([
     0x5051F4A7, 0x537E4165, 0xC31A17A4, 0x963A275E, 0xCB3BAB6B, 0xF11F9D45, 0xABACFA58, 0x934BE303,
     0x552030FA, 0xF6AD766D, 0x9188CC76, 0x25F5024C, 0xFC4FE5D7, 0xD7C52ACB, 0x80263544, 0x8FB562A3,
     0x49DEB15A, 0x6725BA1B, 0x9845EA0E, 0xE15DFEC0, 0x02C32F75, 0x12814CF0, 0xA38D4697, 0xC66BD3F9,
@@ -266,7 +264,7 @@ const AES_Td1 = new Uint32Array([
     0x7139A801, 0xDE080CB3, 0x9CD8B4E4, 0x906456C1, 0x617BCB84, 0x70D532B6, 0x74486C5C, 0x42D0B857
 ]);
 
-const AES_Td2 = new Uint32Array([
+const Td2 = new Uint32Array([
     0xA75051F4, 0x65537E41, 0xA4C31A17, 0x5E963A27, 0x6BCB3BAB, 0x45F11F9D, 0x58ABACFA, 0x03934BE3,
     0xFA552030, 0x6DF6AD76, 0x769188CC, 0x4C25F502, 0xD7FC4FE5, 0xCBD7C52A, 0x44802635, 0xA38FB562,
     0x5A49DEB1, 0x1B6725BA, 0x0E9845EA, 0xC0E15DFE, 0x7502C32F, 0xF012814C, 0x97A38D46, 0xF9C66BD3,
@@ -301,7 +299,7 @@ const AES_Td2 = new Uint32Array([
     0x017139A8, 0xB3DE080C, 0xE49CD8B4, 0xC1906456, 0x84617BCB, 0xB670D532, 0x5C74486C, 0x5742D0B8
 ]);
 
-const AES_Td3 = new Uint32Array([
+const Td3 = new Uint32Array([
     0xF4A75051, 0x4165537E, 0x17A4C31A, 0x275E963A, 0xAB6BCB3B, 0x9D45F11F, 0xFA58ABAC, 0xE303934B,
     0x30FA5520, 0x766DF6AD, 0xCC769188, 0x024C25F5, 0xE5D7FC4F, 0x2ACBD7C5, 0x35448026, 0x62A38FB5,
     0xB15A49DE, 0xBA1B6725, 0xEA0E9845, 0xFEC0E15D, 0x2F7502C3, 0x4CF01281, 0x4697A38D, 0xD3F9C66B,
@@ -336,7 +334,7 @@ const AES_Td3 = new Uint32Array([
     0xA8017139, 0x0CB3DE08, 0xB4E49CD8, 0x56C19064, 0xCB84617B, 0x32B670D5, 0x6C5C7448, 0xB85742D0
 ]);
 
-const AES_Td4 = new Uint32Array([
+const Td4 = new Uint32Array([
     0x52525252, 0x09090909, 0x6A6A6A6A, 0xD5D5D5D5, 0x30303030, 0x36363636, 0xA5A5A5A5, 0x38383838,
     0xBFBFBFBF, 0x40404040, 0xA3A3A3A3, 0x9E9E9E9E, 0x81818181, 0xF3F3F3F3, 0xD7D7D7D7, 0xFBFBFBFB,
     0x7C7C7C7C, 0xE3E3E3E3, 0x39393939, 0x82828282, 0x9B9B9B9B, 0x2F2F2F2F, 0xFFFFFFFF, 0x87878787,
@@ -371,20 +369,15 @@ const AES_Td4 = new Uint32Array([
     0xE1E1E1E1, 0x69696969, 0x14141414, 0x63636363, 0x55555555, 0x21212121, 0x0C0C0C0C, 0x7D7D7D7D
 ]);
 
-/* Byte extraction macros */
-const HIBYTE = (x) => (x >>> 24) & 0xFF;
-const BYTE2 =  (x) => (x >>> 16) & 0xFF;
-const BYTE1 =  (x) => (x >>> 8) & 0xFF;
-const BYTE0 =  (x) =>  x & 0xFF;
 const GETU32 = (ar, off) => {
-    return ((ar[off + 0] << 24) ^ (ar[off + 1] << 16) ^ (ar[off + 2] <<  8) ^ (ar[off + 3])) >>> 0;
+    return ((ar[off+0] << 24) | (ar[off+1] << 16) | (ar[off+2] <<  8) | (ar[off+3]));
 }
 
-const PUTU32 = (ar, off, val32)=>{ 
-    ar[off + 0] = (val32 >>> 24) & 0xFF; 
-    ar[off + 1] = (val32 >>> 16) & 0xFF; 
-    ar[off + 2] = (val32 >>>  8) & 0xFF; 
-    ar[off + 3] = (val32       ) & 0xFF;
+const PUTU32 = (ar, off, val32) => {
+    ar[off+0] = (val32 >> 24)&0xFF; 
+    ar[off+1] = (val32 >> 16)&0xFF; 
+    ar[off+2] = (val32 >>  8)&0xFF; 
+    ar[off+3] = (val32      )&0xFF; 
 }
 
 /**
@@ -395,104 +388,103 @@ const PUTU32 = (ar, off, val32)=>{
 * @param {Buffer} input 
 * @param {Buffer} output 
 */
-function AES_decrypt(rk, keyLength, input, output) {
-    var s0, s1, s2, s3, t0, t1, t2, t3;
-    var r = keyLength >> 1;
+function AES_decrypt(rk, keyLength, input, output) {    
+    var r  = keyLength >> 1;
     var rk_offset = 0;
+
     s0 = GETU32(input,  0) ^ rk[rk_offset+0];
     s1 = GETU32(input,  4) ^ rk[rk_offset+1];
     s2 = GETU32(input,  8) ^ rk[rk_offset+2];
     s3 = GETU32(input, 12) ^ rk[rk_offset+3];
 
+   var s0, s1, s2, s3, t0, t1, t2, t3;
     for (;;) {
-        t0 = 
-            AES_Td0[(s0 >> 24)       ] ^
-            AES_Td1[(s3 >> 16) & 0xff] ^
-            AES_Td2[(s2 >>  8) & 0xff] ^
-            AES_Td3[(s1      ) & 0xff] ^
+        t0 =
+            Td0[(s0 >> 24) & 0xff] ^
+            Td1[(s3 >> 16) & 0xff] ^
+            Td2[(s2 >>  8) & 0xff] ^
+            Td3[(s1      ) & 0xff] ^
             rk[rk_offset+4];
-        t1 = 
-            AES_Td0[(s1 >> 24)       ] ^
-            AES_Td1[(s0 >> 16) & 0xff] ^
-            AES_Td2[(s3 >>  8) & 0xff] ^
-            AES_Td3[(s2      ) & 0xff] ^
+        t1 =
+            Td0[(s1 >> 24) & 0xff] ^
+            Td1[(s0 >> 16) & 0xff] ^
+            Td2[(s3 >>  8) & 0xff] ^
+            Td3[(s2      ) & 0xff] ^
             rk[rk_offset+5];
         t2 =
-            AES_Td0[(s2 >> 24)       ] ^
-            AES_Td1[(s1 >> 16) & 0xff] ^
-            AES_Td2[(s0 >>  8) & 0xff] ^
-            AES_Td3[(s3      ) & 0xff] ^
+            Td0[(s2 >> 24) & 0xff] ^
+            Td1[(s1 >> 16) & 0xff] ^
+            Td2[(s0 >>  8) & 0xff] ^
+            Td3[(s3      ) & 0xff] ^
             rk[rk_offset+6];
         t3 =
-            AES_Td0[(s3 >> 24)       ] ^
-            AES_Td1[(s2 >> 16) & 0xff] ^
-            AES_Td2[(s1 >>  8) & 0xff] ^
-            AES_Td3[(s0      ) & 0xff] ^
+            Td0[(s3 >> 24) & 0xff] ^
+            Td1[(s2 >> 16) & 0xff] ^
+            Td2[(s1 >>  8) & 0xff] ^
+            Td3[(s0      ) & 0xff] ^
             rk[rk_offset+7];
+        
         rk_offset += 8;
         if (--r == 0) {
             break;
         }
+        
         s0 =
-            AES_Td0[(t0 >> 24)       ] ^
-            AES_Td1[(t3 >> 16) & 0xff] ^
-            AES_Td2[(t2 >>  8) & 0xff] ^
-            AES_Td3[(t1      ) & 0xff] ^
+            Td0[(t0 >> 24) & 0xff] ^
+            Td1[(t3 >> 16) & 0xff] ^
+            Td2[(t2 >>  8) & 0xff] ^
+            Td3[(t1      ) & 0xff] ^
             rk[rk_offset+0];
         s1 =
-            AES_Td0[(t1 >> 24)       ] ^
-            AES_Td1[(t0 >> 16) & 0xff] ^
-            AES_Td2[(t3 >>  8) & 0xff] ^
-            AES_Td3[(t2      ) & 0xff] ^
+            Td0[(t1 >> 24) & 0xff] ^
+            Td1[(t0 >> 16) & 0xff] ^
+            Td2[(t3 >>  8) & 0xff] ^
+            Td3[(t2      ) & 0xff] ^
             rk[rk_offset+1];
         s2 =
-            AES_Td0[(t2 >> 24)       ] ^
-            AES_Td1[(t1 >> 16) & 0xff] ^
-            AES_Td2[(t0 >>  8) & 0xff] ^
-            AES_Td3[(t3      ) & 0xff] ^
+            Td0[(t2 >> 24) & 0xff] ^
+            Td1[(t1 >> 16) & 0xff] ^
+            Td2[(t0 >>  8) & 0xff] ^
+            Td3[(t3      ) & 0xff] ^
             rk[rk_offset+2];
         s3 =
-            AES_Td0[(t3 >> 24)       ] ^
-            AES_Td1[(t2 >> 16) & 0xff] ^
-            AES_Td2[(t1 >>  8) & 0xff] ^
-            AES_Td3[(t0      ) & 0xff] ^
+            Td0[(t3 >> 24) & 0xff] ^
+            Td1[(t2 >> 16) & 0xff] ^
+            Td2[(t1 >>  8) & 0xff] ^
+            Td3[(t0      ) & 0xff] ^
             rk[rk_offset+3];
     }
-
+    /*
+        * apply last round and
+        * map cipher state to byte array block:
+        */
     s0 =
-        (AES_Td4[(t0 >> 24)       ] & 0xff000000) ^
-        (AES_Td4[(t3 >> 16) & 0xff] & 0x00ff0000) ^
-        (AES_Td4[(t2 >>  8) & 0xff] & 0x0000ff00) ^
-        (AES_Td4[(t1      ) & 0xff] & 0x000000ff) ^
-   		rk[rk_offset+0];
-
-    PUTU32(output, 0, s0);
-
+        (Td4[(t0 >> 24) & 0xff] & 0xff000000) ^
+        (Td4[(t3 >> 16) & 0xff] & 0x00ff0000) ^
+        (Td4[(t2 >>  8) & 0xff] & 0x0000ff00) ^
+        (Td4[(t1      ) & 0xff] & 0x000000ff) ^
+        rk[rk_offset+0];
+    PUTU32(output,  0, s0);
     s1 =
-        (AES_Td4[(t1 >> 24)       ] & 0xff000000) ^
-        (AES_Td4[(t0 >> 16) & 0xff] & 0x00ff0000) ^
-        (AES_Td4[(t3 >>  8) & 0xff] & 0x0000ff00) ^
-        (AES_Td4[(t2      ) & 0xff] & 0x000000ff) ^
-   		rk[rk_offset+1];
-
-    PUTU32(output, 4, s1);
-
+        (Td4[(t1 >> 24) & 0xff] & 0xff000000) ^
+        (Td4[(t0 >> 16) & 0xff] & 0x00ff0000) ^
+        (Td4[(t3 >>  8) & 0xff] & 0x0000ff00) ^
+        (Td4[(t2      ) & 0xff] & 0x000000ff) ^
+        rk[rk_offset+1];
+    PUTU32(output,  4, s1);
     s2 =
-        (AES_Td4[(t2 >> 24)       ] & 0xff000000) ^
-        (AES_Td4[(t1 >> 16) & 0xff] & 0x00ff0000) ^
-        (AES_Td4[(t0 >>  8) & 0xff] & 0x0000ff00) ^
-        (AES_Td4[(t3      ) & 0xff] & 0x000000ff) ^
-   		rk[rk_offset+2];
-
-    PUTU32(output, 8, s2);
-
+        (Td4[(t2 >> 24) & 0xff] & 0xff000000) ^
+        (Td4[(t1 >> 16) & 0xff] & 0x00ff0000) ^
+        (Td4[(t0 >>  8) & 0xff] & 0x0000ff00) ^
+        (Td4[(t3      ) & 0xff] & 0x000000ff) ^
+        rk[rk_offset+2];
+    PUTU32(output,  8, s2);
     s3 =
-        (AES_Td4[(t3 >> 24)       ] & 0xff000000) ^
-        (AES_Td4[(t2 >> 16) & 0xff] & 0x00ff0000) ^
-        (AES_Td4[(t1 >>  8) & 0xff] & 0x0000ff00) ^
-        (AES_Td4[(t0      ) & 0xff] & 0x000000ff) ^
-   		rk[rk_offset+3];
-
+        (Td4[(t3 >> 24) & 0xff] & 0xff000000) ^
+        (Td4[(t2 >> 16) & 0xff] & 0x00ff0000) ^
+        (Td4[(t1 >>  8) & 0xff] & 0x0000ff00) ^
+        (Td4[(t0      ) & 0xff] & 0x000000ff) ^
+        rk[rk_offset+3];
     PUTU32(output, 12, s3);
 }
 
@@ -572,146 +564,162 @@ function decrypt(ELFBufferSlice, inputRoundKeys) {
     return 0;
 }
 
-/**
- * huffRLE
- * 
- * @param {Buffer} nodes - Huffman table nodes (3 bytes per entry)
- * @param {Buffer} in_buf - Compressed input buffer
- * @param {number} in_len - Length of compressed data to read
- * @param {Buffer} out_buf - Output buffer for decompressed data
- * @returns {boolean} Success or failure
- */
 function huffRLE(nodes, in_buf, in_len, out_buf) {
     const out_len = out_buf.byteLength;
-    var out_off = 0;
 
-    var compressionLevel = 0;
-    var sizeRead = 0;
-    var repeatAmount = 0;
+    let currentCompressionLevel = 0;
+    let bytesReadFromInput = 0;
+    let repetitionCount = 0;
+    let inOffset = 0;
+    let outOffset = 0;
+    let adjustedBytesToWrite = 0;
 
-    var adjustedAmount = 0;
-
-    for (let index = 0; index < out_len; index += adjustedAmount) {
-        if (sizeRead >= in_len) {
-            return 0;
+    // Process until we fill the output buffer
+    for (let currentIndex = 0; currentIndex < out_len; currentIndex += adjustedBytesToWrite) {
+        // Check if we've consumed all input
+        if (bytesReadFromInput >= in_len) {
+            console.log("bytesReadFromInput >= in_len");
+            return false;
         }
-        var firstRead = in_buf.readUint32LE(0); // fix no read length size
-        if (compressionLevel) {
-            firstRead = in_buf.readUint32LE(0) >> compressionLevel;
+
+        // Read 4 bytes (DWORD) from input
+        let initialByteValue = in_buf[inOffset] | (in_buf[inOffset + 1] << 8) |
+            (in_buf[inOffset + 2] << 16) | (in_buf[inOffset + 3] << 24);
+        initialByteValue = initialByteValue >>> 0;
+        // Apply compression level shift if active
+        if (currentCompressionLevel) {
+            initialByteValue >>= currentCompressionLevel;
         }
-        var adjustedChunkOffset = nodes.subarray(3 * (firstRead & 0xff));
-        var subChunkRead1 = adjustedChunkOffset[1];
-        var subChunkRead2 = adjustedChunkOffset[2];
-        var subChunkRead0 = adjustedChunkOffset[0];
-        if (subChunkRead1 >> 7) {
-            var v13 = subChunkRead2;
-            var stride = subChunkRead0 | ((subChunkRead1 & 0x7F) << 8);
+
+        // Get the node for this byte value (3 bytes per node)
+        const nodeOffset = (initialByteValue & 0xFF) * 3;
+        const nodeFirstComponent = nodes[nodeOffset + 1];
+        const nodeSecondComponent = nodes[nodeOffset + 2];
+        const nodeThirdComponent = nodes[nodeOffset];
+
+        let calculatedStride, finalStride;
+
+        // Check if this is a terminal node (bit 7 of first component set)
+        if (nodeFirstComponent & 0x80) {
+            calculatedStride = nodeSecondComponent;
+            finalStride = nodeThirdComponent | ((nodeFirstComponent & 0x7F) << 8);
         } else {
-            v13 = subChunkRead2 + 1;
-            var v15 = subChunkRead0 | ((subChunkRead1 & 0x7F) << 8);
-            for (let i = 1 << subChunkRead2; ; i = 2 * i2) {
-                var i2 = i;
-                var currentNode = nodes.subarray(3 * v15 + 3 * ((i & firstRead) != 0));
-                var nextNode = currentNode[1];
-                if (nextNode >> 7) {
+            // Non-terminal node - traverse the tree
+            calculatedStride = nodeSecondComponent + 1;
+            let centerIndex = nodeThirdComponent | ((nodeFirstComponent & 0x7F) << 8);
+            let shiftAmount = 1 << nodeSecondComponent;
+            let loopCounter = shiftAmount;
+            let nextNodeValue, currentNodePointer;
+            while (true) {
+                shiftAmount = loopCounter;
+                currentNodePointer = (centerIndex * 3) + ((loopCounter & initialByteValue) !== 0 ? 3 : 0);
+                nextNodeValue = nodes[currentNodePointer + 1];
+
+                if (nextNodeValue & 0x80) {
                     break;
                 }
-                v15 = ((nextNode & 0x7F) << 8) | currentNode[0];
-                ++v13;
+
+                centerIndex = ((nextNodeValue & 0x7F) << 8) | nodes[currentNodePointer];
+                calculatedStride++;
+                loopCounter *= 2;
             }
-            stride = (((nextNode & 0x7F) << 8) | currentNode[0]) & 0xFFFF;
+
+            finalStride = ((nextNodeValue & 0x7F) << 8) | nodes[currentNodePointer];
         }
-        var v19 = compressionLevel + v13 >>> 0;
-        compressionLevel = v19 & 7;
-        in_buf = in_buf.subarray(v19 >> 3, in_buf.length);
-        sizeRead += v19 >> 3;
-        var op = stride & 0x300;
-        if (op == 0) {
-            out_buf[out_off + 0] = stride;
-            adjustedAmount = 1;
-            out_off += adjustedAmount
-            continue;
-        }
-        if (op == 0x100) {
-            if (repeatAmount > 0xFF) {
-                return 0;
+
+        // Update compression level and input pointer
+        const compressionStride = currentCompressionLevel + calculatedStride;
+        currentCompressionLevel = compressionStride & 7;
+        const bytesConsumed = compressionStride >> 3;
+        inOffset += bytesConsumed;
+        bytesReadFromInput += bytesConsumed;
+
+        // Process the decoded operation type (bits 8-9 of finalStride)
+        const operationType = finalStride & 0x300;
+
+        adjustedBytesToWrite = 0;
+
+        if (operationType === 0) {
+            // Direct write
+            out_buf[outOffset] = finalStride & 0xFF;
+            adjustedBytesToWrite = 1;
+        } else if (operationType === 0x100) {
+            // Repeat count accumulation
+            if (repetitionCount > 0xFF) {
+                console.log("repetitionCount > 0xFF");
+                return false;
             }
-            if (repeatAmount) {
-                repeatAmount = (repeatAmount << 8) | (stride & 0xff);
-            }
-            else {
-                repeatAmount = (stride & 0xff);
-            }
-            adjustedAmount = 0;
-        } else {
-            if (op == 0x200) {
-                if (!repeatAmount) {
-                    repeatAmount = 1;
-                }
-                adjustedAmount = repeatAmount * (stride & 0xff);
-                if (index + adjustedAmount > out_len) {
-                    return 0;
-                }
-                switch (stride & 0xff )
-                {
-                    case 1:
-                        var counter1 = 0;
-                        do {
-                            out_buf[out_off + counter1++] = out_buf[out_off - 1];
-                        }
-                        while (counter1 < repeatAmount);
-                    break;
-                    case 2:
-                        var out_buf2 = out_buf;
-                        counter2 = 0;
-                        do {
-                            ++counter2;
-                            out_buf2[out_off] = out_buf[out_off - 2];
-                            out_buf2[out_off + 1] = out_buf[out_off - 1];
-                            out_buf2.subarray(2, out_buf2.length);
-                        }
-                        while (counter2 < repeatAmount);
-                        break;
-                    case 4:
-                        _out_buf4 = out_buf;
-                        counter4 = 0;
-                        do {
-                            ++counter4;
-                            _out_buf4[out_off + 0] = out_buf[out_off - 4];
-                            _out_buf4[out_off + 1] = out_buf[out_off - 3];
-                            _out_buf4[out_off + 2] = out_buf[out_off - 2];
-                            _out_buf4[out_off + 3] = out_buf[out_off - 1];
-                            _out_buf4.subarray(4, _out_buf4.length);
-                        }
-                        while (counter4 < repeatAmount);
-                        break;
-                }
+            if (repetitionCount) {
+                repetitionCount = (repetitionCount << 8) | (finalStride & 0xFF);
             } else {
-                if (op != 0x300) {
-                    out_off += adjustedAmount;
-                    continue;
+                repetitionCount = finalStride & 0xFF;
+            }
+            adjustedBytesToWrite = 0;
+        } else if (operationType === 0x200) {
+            // Forward copy operation
+            if (!repetitionCount) {
+                repetitionCount = 1;
+            }
+            adjustedBytesToWrite = repetitionCount * (finalStride & 0xFF);
+
+            if (currentIndex + adjustedBytesToWrite > out_len) {
+                console.log("currentIndex + adjustedBytesToWrite > out_len");
+                return false;
+            }
+
+            const copyValue = finalStride & 0xFF;
+            if (copyValue === 1) {
+                // Copy 1 byte back repeatedly
+                for (let i = 0; i < repetitionCount; i++) {
+                    out_buf[outOffset + i] = out_buf[outOffset - 1];
                 }
-                adjustedAmount = stride & 0xff;
-                if (index + (stride & 0xff) > out_len )
-                {
-                    return 0;
+            } else if (copyValue === 2) {
+                // Copy 2 bytes back repeatedly
+                for (let i = 0; i < repetitionCount; i++) {
+                    const copyIdx = (outOffset - 2) + (i * 2);
+                    out_buf[outOffset + (i * 2)] = out_buf[copyIdx];
+                    out_buf[outOffset + (i * 2) + 1] = out_buf[copyIdx + 1];
                 }
-                var v26 = repeatAmount + ( stride & 0xff);
-                if (index < v26) {
-                    return 0;
-                }
-                //var inverse = out_buf[out_off - v26];
-                for (j = 0; j < (stride & 0xff); ++j )
-                {
-                    out_buf[out_off + j] = out_buf[out_off - v26 + j];
+            } else if (copyValue === 4) {
+                // Copy 4 bytes back repeatedly
+                for (let i = 0; i < repetitionCount; i++) {
+                    const copyIdx = (outOffset - 4) + (i * 4);
+                    out_buf[outOffset + (i * 4)] = out_buf[copyIdx];
+                    out_buf[outOffset + (i * 4) + 1] = out_buf[copyIdx + 1];
+                    out_buf[outOffset + (i * 4) + 2] = out_buf[copyIdx + 2];
+                    out_buf[outOffset + (i * 4) + 3] = out_buf[copyIdx + 3];
                 }
             }
-            repeatAmount = 0;
+            repetitionCount = 0;
+        } else if (operationType === 0x300) {
+            // Inverse copy operation
+            adjustedBytesToWrite = finalStride & 0xFF;
+            if (currentIndex + adjustedBytesToWrite > out_len) {
+                console.log("currentIndex + adjustedBytesToWrite > out_len");
+                return false;
+            }
+
+            const totalBytesToProcess = repetitionCount + (finalStride & 0xFF);
+            if (currentIndex < totalBytesToProcess) {
+                console.log("currentIndex < totalBytesToProcess", currentIndex, totalBytesToProcess);
+                return false;
+            }
+
+            const inverseBuffer = outOffset - totalBytesToProcess;
+            for (let i = 0; i < (finalStride & 0xFF); i++) {
+                out_buf[outOffset + i] = out_buf[inverseBuffer + i];
+            }
+            repetitionCount = 0;
+        } else {
+            // Unknown operation type - just continue
+            adjustedBytesToWrite = 0;
         }
-        // LABEL_50:
-        out_off += adjustedAmount;
+
+        outOffset += adjustedBytesToWrite;
     }
-    return sizeRead + (compressionLevel != 0) == in_len;
+
+    // Return success if input was completely consumed
+    return bytesReadFromInput + (currentCompressionLevel !== 0 ? 1 : 0) === in_len;
 }
 
 /**
@@ -792,43 +800,39 @@ function decryptBuffer(inputBuffer, disSize) {
 
     for (let i = 0; i < metas.length; i++) {
         const m = metas[i];
-        // Copy the source slice into the temp buffer (exactly as in the C pseudocode)
+
         const srcData = inputBuffer.subarray(
             chunkELFStart + m.srcStart,
             chunkELFStart + m.srcStart + m.srcSize
         );
         // AES stage – operates ONLY on the first srcSize bytes of the temp buffer
         if (sboxData && srcData.byteLength >= 16) {
-            console.log("src pre encrypt ", srcData);
+            //console.log("src pre encrypt ", srcData);
 
             if (!decrypt(srcData, sboxData)) {
                 console.log("~~ AES failed on slice");
+                console.log("src post aes ", srcData);
                 return [inputBuffer, false];
             }
 
-            console.log("src post encrypt", srcData);
+            //console.log("src post encrypt", srcData);
         }
         // Write to final ELF
         if (m.srcSize === m.destSize) {
-            // Direct copy of decrypted temp
             srcData.copy(elf, m.destStart, 0, m.destSize);
         } else {
-            // Decompression case – pass the decrypted temp (first srcSize bytes) as bitstream
             const tmpBuffer = Buffer.alloc(Math.max(m.srcSize, 32));
 
             srcData.copy(tmpBuffer, 0, 0, m.srcSize);
 
             const destView = elf.subarray(m.destStart, m.destStart + m.destSize);
 
-            console.log("src pre decomp  ", srcData);
+            //console.log("src pre decomp  ", srcData);
 
             if (!huffRLE(huffData, tmpBuffer, m.srcSize, destView)) {
                 console.log("~~ Decompression failed on slice");
                 console.log("src post decomp ", destView);
                 return [inputBuffer, false];
-            } else {
-                console.log("Decompression passed!");
-                console.log("src post decomp ", destView);
             }
         }
     }
@@ -851,7 +855,7 @@ function runLibSoDecry() {
         console.log(success ? "✓ Decrypted" : "✗ Failed", entry.name);
         fs.writeFileSync(`./libs/_lib__57d5__${entry.start}_section_${entry.name}${success ? "" : "_encrypted"}.bin`, result);
 
-         if (!success) {
+        if (!success) {
             didFinish = false;
             break;
         }
@@ -861,7 +865,7 @@ function runLibSoDecry() {
         }
     }
 
-    if(didFinish){
+    if (didFinish) {
         fs.writeFileSync('./libs/lib__57d5__decry.so', encryptedData);
 
         console.log("✅ Full decrypted .so written!");

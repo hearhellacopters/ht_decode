@@ -609,6 +609,5 @@ This file has already been decoded from the PRNG function.
 ## Next Steps
 
 - Created `test_extract.js` for node.
-- Was able to recreate PRNG function but wasn't successful after that.
-- Will likely need changes from the source pseudocode to work.
-- Different programming language could be easier.
+- Currently only tested on 32 bit libs
+- Need a way to input locations other than hardcoding

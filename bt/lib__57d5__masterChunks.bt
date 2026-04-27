@@ -48,7 +48,7 @@ struct{                            // int index
     uint32 chunkELFSize;           // 1 total size of packed chunk
     uint32 chunkELFSliceMetaStart; // 2 Start of meta data on slices within elf chunk
     uint32 chunkELFSliceMetaCount; // 3 number of slices in chunkELF
-    uint32 compTableStart;         // 4 (compTableSize != 0) Huffman-coded command stream + RLE decompressor
+    uint32 compTableStart;         // 4 (compTableSize != 0) Huffman-coded LZSS with pattern acceleration (1/2/4 byte replication)
     uint32 compTableSize;          // 5 Huffman-REL data (decomps when != 0)
     uint32 roundKeysStart;         // 6 (roundKeysSize != 0) AES roundKeys for T-table AES + CBC !FULL_UNROLL https://fastcrypto.org/front/misc/rijndael-alg-fst.c 
     uint32 roundKeysSize;          // 7 roundKeys size (decrypts when != 0)

@@ -53,6 +53,23 @@ def read_cstr(ea):
         ea += 1
     return "".join(s)
 
+def get_sym(sym_index):
+    if sym_index >= SYMTAB_COUNT:
+        return None
+
+    ea = sym_ea + (sym_index * 0x10)
+
+    st_name  = u32(ea + 0x00)
+    st_value = u32(ea + 0x04)
+
+    name = ""
+    if st_name != 0:
+        name = read_cstr(str_ea + st_name)
+
+    return {
+        "value": st_value,
+        "name": name
+    }
     
 def apply_rel(rel_base, count, label):
     print(f"[+] Applying {label} REL @ {rel_base:08X} count={count}")
@@ -255,23 +272,5 @@ for i in range(SYMTAB_COUNT):
         ida_funcs.add_func(st_value)
 
     print(f"  sym[{i}] {name} @ {st_value:08X}")
-
-def get_sym(sym_index):
-    if sym_index >= SYMTAB_COUNT:
-        return None
-
-    ea = sym_ea + (sym_index * 0x10)
-
-    st_name  = u32(ea + 0x00)
-    st_value = u32(ea + 0x04)
-
-    name = ""
-    if st_name != 0:
-        name = read_cstr(str_ea + st_name)
-
-    return {
-        "value": st_value,
-        "name": name
-    }
 
 print("[+] Done")
