@@ -853,7 +853,7 @@ function runLibSoDecry() {
         const [result, success] = decryptBuffer(buffer, entry.disSize, i);
 
         console.log(success ? "✓ Decrypted" : "✗ Failed", entry.name);
-        fs.writeFileSync(`./libs/_lib__57d5__${entry.start}_section_${entry.name}${success ? "" : "_encrypted"}.bin`, result);
+        fs.writeFileSync(`./libs/lib__57d5__${entry.start}_section_${entry.name}${success ? "" : "_encrypted"}.bin`, result);
 
         if (!success) {
             didFinish = false;
@@ -866,7 +866,7 @@ function runLibSoDecry() {
     }
 
     if (didFinish) {
-        fs.writeFileSync('./libs/lib__57d5__decry.so', encryptedData);
+        //fs.writeFileSync('./libs/lib__57d5__decry.so', encryptedData);
 
         console.log("✅ Full decrypted .so written!");
     }
