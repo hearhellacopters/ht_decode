@@ -1,0 +1,30 @@
+{
+  "name": "ht_decode",
+  "version": "1.0.0",
+  "description": "Anti-VM lib breadown.",
+  "main": "app.js",
+  "scripts": {
+    "test": "node app.js --file ./libs/lib__57d5__.so --Lv0 0x15AC --Lv1 0x1C50 --Lv2 0x1C0C --Lv3 0x1C0C",
+    "build": "node build.win.js",
+    "build:mac:x64": "pkg . --compress GZip --targets node24-macos-x64 -o ht_decode-macos-x64 && codesign --sign - ht_decode-macos-x64",
+    "build:mac:arm": "pkg . --compress GZip --targets node24-macos-arm64 -o ht_decode-macos-arm64 && codesign --sign - ht_decode-macos-arm64",
+    "build:linux": "pkg . --compress GZip --targets node24-linux-x64 -o ht_decode-linux-x64",
+    "build:win": "node build.win.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hearhellacopters/ht_decode.git"
+  },
+  "author": "hearhellacopters",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hearhellacopters/ht_decode/issues"
+  },
+  "homepage": "https://github.com/hearhellacopters/ht_decode#readme",
+  "devDependencies": {
+    "commander": "^12.1.0"
+  },
+  "dependencies": {
+    "@hearhellacopters/exe": "^2.1.5"
+  }
+}

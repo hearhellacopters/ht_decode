@@ -1,4 +1,5 @@
 import idaapi
+import ida_nalt
 import ida_bytes
 import ida_segment
 import ida_name
@@ -10,17 +11,13 @@ til = ida_typeinf.get_idati()
 
 TYPE = ida_typeinf.PT_SIL | ida_typeinf.PT_EMPTY | ida_typeinf.PT_TYP
 
-Elf32_Rel = "struct Elf32_Rel { uint32 r_offset; uint32 r_info; };"
+Elf32_Rel = "struct Elf32_Rel { unsigned __int32 r_offset; unsigned __int32 r_info; };"
 
 ida_typeinf.parse_decls(til, Elf32_Rel, False, 0)
 
-header = "struct header {   int PT_DYNAMIC_OFF __offset(OFF32,0x38);   int PT_DYNAMIC_COUNT;   int REL_OFF __offset(OFF32,0x38);   int REL_COUNT;   int JMPREL_OFF __offset(OFF32,0x38);   int JMPREL_COUNT;   int SYMTAB_OFF __offset(OFF32,0x38);   int SYMTAB_COUNT;   int STRTAB_OFF __offset(OFF32,0x38);   int STRTAB_COUNT;   int SEGMENT_OFF __offset(OFF32,0x38);   int SEGMENT_COUNT;   int _7th56Count;   int gap34; };"
+header = "struct header {   int PT_DYNAMIC_OFF __offset(OFF32,0x38);   int PT_DYNAMIC_COUNT;   int REL_OFF __offset(OFF32,0x38);   int REL_COUNT;   int JMPREL_OFF __offset(OFF32,0x38);   int JMPREL_COUNT;   int SYMTAB_OFF __offset(OFF32,0x38);   int SYMTAB_COUNT;   int STRTAB_OFF __offset(OFF32,0x38);   int STRTAB_COUNT;   int SEGMENT_OFF __offset(OFF32,0x38);   int SEGMENT_COUNT;   int MACHINE_TYPE;   int gap34; };"
 
 ida_typeinf.parse_decls(til, header, False, 0)
-
-Elf32_Sym = "struct Elf32_Sym { unsigned __int32 st_name __offset(OFF32,0x538); unsigned __int32 st_value __off; unsigned __int32 st_size; unsigned __int8 st_info; unsigned __int8 st_other; unsigned __int16 st_shndx;};"
-
-ida_typeinf.parse_decls(til, Elf32_Sym, False, 0)
 
 _DYN = "union Elf32_Dyn::$A263394DDF3EC2D4B1B8448EDD30E249{  unsigned __int32 d_val;  unsigned __int32 d_ptr;};"
 
@@ -30,10 +27,21 @@ Elf_DTs = "enum Elf_DTs {   DT_NULL = 0x0,   DT_NEEDED = 0x1,   DT_PLTRELSZ = 0x
 
 ida_typeinf.parse_decls(til, Elf_DTs, False, 0)
 
+PROT = "enum PROT { PROT_READ = 0x1, PROT_WRITE = 0x2, PROT_EXEC = 0x4, PROT_NONE = 0x0, PROT_GROWSDOWN = 0x1000000, PROT_GROWSUP = 0x2000000, PROT_EXEC_READ = PROT_EXEC | PROT_READ, PROT_EXEC_WRITE = PROT_EXEC | PROT_WRITE,};"
+
+ida_typeinf.parse_decls(til, PROT, False, 0)
+
+SEG = "struct Seg{  int vaddr_or_offset;  int size;  PROT prot_or_type;  int extra;};"
+
+ida_typeinf.parse_decls(til, SEG, False, 0)
+
 Elf32_Dyn = "struct Elf32_Dyn {   Elf_DTs d_tag;   union Elf32_Dyn::$A263394DDF3EC2D4B1B8448EDD30E249 d_un; };"
 
 ida_typeinf.parse_decls(til, Elf32_Dyn, False, 0)
 
+sym_info = "enum __bitmask sym_info : __int8 {   MM_F0h_sym_info_bind_e = 0xF0,        ///< MASK   STB_LOCAL = 0x0,   STB_GLOBAL = 0x10,   STB_WEAK = 0x20,   STB_NUM = 0x30,   STB_LOOS = 0xA0,   STB_GNU_UNIQUE = 0xA0,   STB_HIOS = 0xC0,   STB_LOPROC = 0xD0,   STB_HIPROC = 0xE0,   STB_UNKNOWN = 0xF0,   MM_Fh_sym_info_type_e = 0xF,          ///< MASK   STT_NOTYPE = 0x0,   STT_OBJECT = 0x1,   STT_FUNC = 0x2,   STT_SECTION = 0x3,   STT_FILE = 0x4,   STT_COMMON = 0x5,   STT_TLS = 0x6,   STT_NUM = 0x7,   STT_LOOS = 0xA,   STT_GNU_IFUNC = 0xA,   STT_HIOS = 0xB,   STT_LOPROC = 0xC,   STT_HIPROC = 0xD, };"
+
+ida_typeinf.parse_decls(til, sym_info, False, 0)
 
 BASE = 0x0
 HDR_SIZE = 0x38
@@ -43,8 +51,6 @@ R_ARM_ABS32      = 2
 R_ARM_RELATIVE   = 23
 R_ARM_GLOB_DAT   = 21
 R_ARM_JUMP_SLOT  = 22
-
-
 
 def u32(ea):
     return ida_bytes.get_dword(ea)
@@ -102,7 +108,18 @@ def try_make_entry(addr):
         idc.create_insn(addr)
         idaapi.auto_wait()
 
+def is_valid_ptr(ea):
+    return ea != 0 and ida_bytes.is_loaded(ea)
+
 def apply_pointer(reloc_addr, val):
+    if not is_valid_ptr(reloc_addr):
+        print(f"[!] Skipping bad reloc FROM {reloc_addr:08X}")
+        return
+        
+    if not is_valid_ptr(val):
+        print(f"[!] Skipping bad reloc TO {val:08X}")
+        return
+        
     if not ida_bytes.is_loaded(reloc_addr):
         return
 
@@ -118,9 +135,14 @@ def apply_pointer(reloc_addr, val):
     idc.op_plain_offset(reloc_addr, 0, 0)
 
     idaapi.add_dref(reloc_addr, val, idaapi.dr_O)
+    
 # --------------------------------------------------
 # Helpers
 # --------------------------------------------------
+
+def in_segment(ea):
+    seg = idaapi.getseg(ea)
+    return seg is not None and seg.start_ea <= ea < seg.end_ea
 
 def fix_thumb(addr):
     if addr & 1:
@@ -138,6 +160,13 @@ def read_cstr(ea):
         s.append(chr(c))
         ea += 1
     return "".join(s)
+    
+def is_end_of_image(addr):
+    seg = idaapi.getseg(addr)
+    if not seg:
+        return True
+
+    return addr == seg.end_ea
 
 def get_sym(sym_index):
     if sym_index >= SYMTAB_COUNT:
@@ -193,6 +222,27 @@ def apply_rel(rel_base, count, label):
         if val is None:
             continue
         
+        if val == 0:
+            continue
+            
+        if not in_segment(reloc_addr):
+            continue
+
+        if not in_segment(val):
+            continue
+            
+        if is_end_of_image(val):
+            continue
+            
+        seg = idaapi.getseg(reloc_addr)
+        if not seg or reloc_addr + 4 > seg.end_ea:
+            print(f"[!] Reloc crosses segment boundary @ {reloc_addr:08X}")
+            continue
+            
+        if sym and sym["value"] == 0:
+            # unresolved import or placeholder
+            continue
+        
         if not ida_bytes.is_loaded(val):
             print(f"[!] BAD target {val:08X} from {reloc_addr:08X}")
             continue
@@ -238,6 +288,10 @@ if SYMTAB_COUNT:
     name_region(sym_ea, SYMTAB_SIZE, ".dynsym")
 
 str_ea   = off(STRTAB_OFF)
+
+Elf32_Sym = f"struct Elf32_Sym {{ unsigned __int32 st_name __offset(OFF32,{str_ea}); unsigned __int32 st_value __off; unsigned __int32 st_size; sym_info st_info; unsigned __int8 st_other; unsigned __int16 st_shndx;}};"
+
+ida_typeinf.parse_decls(til, Elf32_Sym, False, 0)
 
 if STRTAB_COUNT:
     name_region(str_ea, STRTAB_SIZE, ".dynstr")
@@ -349,10 +403,14 @@ for i in range(SYMTAB_COUNT):
         continue
         
     addr = st_value
+    
+    if is_end_of_image(addr):
+        continue
 
     addr = fix_thumb(addr)
 
-    ida_name.set_name(addr, name, ida_name.SN_FORCE | ida_name.SN_NOWARN)
+    if addr > BASE + HDR_SIZE:   # avoid header region
+        ida_name.set_name(addr, name, ida_name.SN_FORCE | ida_name.SN_NOWARN)
 
     # mark as function if plausible
     if st_size > 0:

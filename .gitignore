@@ -1,3 +1,6 @@
 node_modules
 _lib*
 .nvmrc
+package-lock.json
+ht_decode.exe
+test_*

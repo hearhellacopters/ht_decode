@@ -11,6 +11,9 @@
 //   History: 
 //------------------------------------------------
 
+local int strOff = 0;
+local uint start = FTell();
+
 typedef enum  <uint> 
 {
   DT_NULL = 0x0,
@@ -75,25 +78,15 @@ typedef struct {
        uint      d_val;
        uint      d_ptr;
     } d_union32;
+    if(d_tag == DT_NEEDED || d_tag == DT_SONAME){
+        local string name = ReadString(56 + strOff + d_union32.d_ptr);
+    }
 }Elf32_Dyn <read=EnumToString(this.d_tag)>;
 
 typedef struct {
     uint r_offset;
     uint r_info;
 }Elf32_Rel;
-
-typedef enum <unsigned char> {
-    STB_LOCAL       = 0x0,
-    STB_GLOBAL      = 0x1,
-    STB_WEAK        = 0x2,
-    STB_NUM         = 0x3,
-    STB_LOOS        = 0xA,
-    STB_GNU_UNIQUE  = 0xA,
-    STB_HIOS        = 0xC,
-    STB_LOPROC      = 0xD,
-    STB_HIPROC      = 0xE,
-    STB_UNKNOWN     = 0xF
-} sym_info_bind_e;
 
 typedef enum <unsigned char> {
     STT_NOTYPE      = 0x0,
@@ -110,6 +103,19 @@ typedef enum <unsigned char> {
     STT_LOPROC      = 0xC,
     STT_HIPROC      = 0xD
 } sym_info_type_e;
+
+typedef enum <unsigned char> {
+    STB_LOCAL       = 0x0,
+    STB_GLOBAL      = 0x1,
+    STB_WEAK        = 0x2,
+    STB_NUM         = 0x3,
+    STB_LOOS        = 0xA,
+    STB_GNU_UNIQUE  = 0xA,
+    STB_HIOS        = 0xC,
+    STB_LOPROC      = 0xD,
+    STB_HIPROC      = 0xE,
+    STB_UNKNOWN     = 0xF
+} sym_info_bind_e;
 
 typedef struct {
     BitfieldDisablePadding();
@@ -173,49 +179,49 @@ typedef enum <uint>
 } PROT;
 
 typedef struct  {
-    uint vaddr_or_offset;
-    uint size;
-    PROT prot_or_type;
+    uint offset<format=hex>;
+    uint size<format=hex>;
+    PROT prot;
     uint extra;
 }Seg;
 
 struct{
-    local uint off56<hidden=true> = 56;
-    uint PT_DYNAMIC_OFF<bgcolor=cLtYellow, comment=".dynamic">;
+    uint PT_DYNAMIC_OFF<bgcolor=cLtYellow, comment=".dynamic">; // Elf32_Dyn
     uint PT_DYNAMIC_COUNT<bgcolor=cLtYellow>;
-    uint REL_OFF<bgcolor=cLtBlue, comment=".rel.dyn">;
+    uint REL_OFF<bgcolor=cLtBlue, comment=".rel.dyn">; // Elf32_Rel
     uint REL_COUNT<bgcolor=cLtBlue>;
-    uint JMPREL_OFF<bgcolor=cLtRed, comment=".rel.plt">;
+    uint JMPREL_OFF<bgcolor=cLtRed, comment=".rel.plt">; // Elf32_Rel
     uint JMPREL_COUNT<bgcolor=cLtRed>;
-    uint SYMTAB_OFF<bgcolor=cLtYellow, comment=".dynsym">;    // 4th
-    uint SYMTAB_COUNT<bgcolor=cLtYellow>;  // 4th
-    uint STRTAB_OFF<bgcolor=cLtBlue, comment=".dynstr">;      // 5th
-    uint STRTAB_COUNT<bgcolor=cLtBlue>;    // 5th
-    uint SEGMENT_OFF<bgcolor=cLtRed>;
+    uint SYMTAB_OFF<bgcolor=cLtYellow, comment=".dynsym">; // Elf32_Sym
+    uint SYMTAB_COUNT<bgcolor=cLtYellow>;  
+    uint STRTAB_OFF<bgcolor=cLtBlue, comment=".dynstr">; // string table
+    uint STRTAB_COUNT<bgcolor=cLtBlue>;    
+    uint SEGMENT_OFF<bgcolor=cLtRed>;      // offsets for mprot flag
     uint SEGMENT_COUNT<bgcolor=cLtRed>;
-    uint _7th56Count<bgcolor=cLtYellow>;
+    uint MACHINE_TYPE<bgcolor=cLtYellow>; // 40 = arm32
+    strOff = STRTAB_OFF;
     if(PT_DYNAMIC_COUNT){
-        FSeek(off56 + PT_DYNAMIC_OFF);
-        Elf32_Dyn dym[PT_DYNAMIC_COUNT]<bgcolor=cLtYellow>;
+        FSeek(56 + start + PT_DYNAMIC_OFF);
+        Elf32_Dyn dym[PT_DYNAMIC_COUNT]<optimize=false, bgcolor=cLtYellow>;
     }
     if(REL_COUNT){
-        FSeek(off56 + REL_OFF);
+        FSeek(56 + start + REL_OFF);
         Elf32_Rel rel[REL_COUNT]<bgcolor=cLtBlue, optimize=false>;
     }
     if(JMPREL_COUNT){
-        FSeek(off56 + JMPREL_OFF);
+        FSeek(56 + start + JMPREL_OFF);
         Elf32_Rel jmprel[JMPREL_COUNT]<bgcolor=cLtRed, optimize=false>;
     }
     if(SYMTAB_COUNT){
-        FSeek(off56 + SYMTAB_OFF);
+        FSeek(56 + start + SYMTAB_OFF);
         symRead symtab(SYMTAB_COUNT, STRTAB_OFF)<bgcolor=cLtYellow, optimize=false>;
     }
     if(STRTAB_COUNT){
-        FSeek(off56 + STRTAB_OFF);
+        FSeek(56 + start + STRTAB_OFF);
         funcNames strtab(STRTAB_COUNT)<bgcolor=cLtBlue, optimize=false>;
     }
     if(SEGMENT_COUNT){
-        FSeek(off56 + SEGMENT_OFF);
+        FSeek(56 + start + SEGMENT_OFF);
         Seg seg[SEGMENT_COUNT]<bgcolor=cLtRed>;
     }
 } tableELF<open=true>;

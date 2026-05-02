@@ -1,0 +1,65 @@
+//------------------------------------------------
+//--- 010 Editor v16.0.4 Binary Template
+//
+//      File: lib__57d5__tables.bt
+//   Authors: Hellacopters
+//   Version: v1.0.0
+//   Purpose: Research
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+// for table passoffs
+
+local uint size = 856 / 56;
+
+typedef enum <uint32>{
+    dllist            = 5, // basic lib list
+    setupDT_NEEDED    = 4, // setupDT_NEEDED, run
+    HtLoadLibrary     = 1, // HtLoadLibrary setHtElfTab, HtGetProcAddress setHtElfTab2 (was blank) (lightweigth)
+    ht_lookup         = 2, // ht_lookup, ht_gnu_lookup (lightweigth)
+    ht_gnu_lookup     = 3, // also ht_lookup, ht_gnu_lookup (full build)
+    libht_reloc_ndk   = 6, // setHtElfTab (passsed to a sub function), setHtElfTab2, HtGetProcAddress HtLoadLibrary (full built)
+    libht_decode      = 8, // ht_decode decrypt and decompress
+    libht_mutex       = 9, // lib for other stuff / helper
+    
+    libOptCommonExec  = 145,
+    liboptprotectmem  = 29,
+    liboptodexchk     = 28,
+    liboptnotifylog   = 27,
+    liboptloadpathchk = 26,
+    liboptemuchk      = 24,
+    liboptdexchk      = 23,
+    liboptdebuggrd    = 22,
+    liboptddmsgrd     = 21,
+    liboptdalvikchk   = 20,
+    liboptcoredumpgrd = 19,
+    liboptcertchk     = 18,
+    liboptapkchk      = 16,
+    libtest           = 144,
+
+    libLvDecode       = 240,
+    
+} types;
+
+struct{
+    types type<comment="1 ELF without headers, 2 is also a headerless ELF but with an hashtable thats needs fixing, 4 ELF with header, 5 = strings, ">;
+    uint32 flags<format=hex>;
+    local char ELFHeaderParse<comment="(flags & 0x10000) == 0"> = (flags & 0x10000) == 0;
+    local char HtLoadLibrary<comment="(flags & 0x200) != 0"> = (flags & 0x200) != 0;
+    local char convertFuncExport<comment="(flags & 0x100) != 0"> = (flags & 0x100) != 0;
+    uint32 distSize;
+    uint32 mprotect;
+    uint32 mprotectStart;
+    uint32 mprotectSize<comment="protects the elf">;
+    uint32 funcPassOffset<format=hex,comment="within recreated elf">;
+    uint32 funcExports<format=hex>;
+    uint32 exportCount<comment="in ints">;
+    uint32 data24;
+    uint32 data28;
+    uint32 offsetWithinMaster<comment="in current elf">;
+    uint32 sizeWithinMaster<comment="in current elf">;
+    uint32 data34;
+} entry[size]<open=true, optimize=false>;

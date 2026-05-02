@@ -1,13 +1,20 @@
 
-const array = new Uint32Array([0xF2D2B3F1, 0xB1B352, 0, 0]);
+const array = new Uint32Array([0x12F212D2, 0xF61351D3, 0x5332]);
 
-const buffer =  Buffer.from(array.buffer, array.byteOffset, array.byteLength)
+const buffer =  Buffer.from(array.buffer, array.byteOffset, array.byteLength);
 
+/**
+ * Decode a string from a buffer
+ * 
+ * @param {Buffer} buffer 
+ * @returns 
+ */
 function DoDecodeString(buffer) {
-    for (let i = 0; i < buffer.length && buffer[i] !== 0; i++) {
+    let i;
+    for (i = 0; i < buffer.length && buffer[i] !== 0; i++) {
         buffer[i] = (~((8 * buffer[i]) | (buffer[i] >> 5)) - (i & 3)) & 0xFF;
     }
-    return buffer;
+    return buffer.subarray(0, i).toString();
 }
 
-console.log(DoDecodeString(buffer).toString());
+console.log(DoDecodeString(buffer));

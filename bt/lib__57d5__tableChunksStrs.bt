@@ -1,0 +1,100 @@
+//------------------------------------------------
+//--- 010 Editor v16.0.4 Binary Template
+//
+//      File: lib__57d5__tableChunksStrs.bt
+//   Authors: Hellacopters
+//   Version: v1.0.0
+//   Purpose: Research
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+typedef struct{
+    uint32 strCount;
+    uint32 offset;
+} subStruc;
+
+typedef enum  <uint> 
+{
+  DT_NULL = 0x0,
+  DT_NEEDED = 0x1,
+  DT_PLTRELSZ = 0x2,
+  DT_PLTGOT = 0x3,
+  DT_HASH = 0x4,
+  DT_STRTAB = 0x5,
+  DT_SYMTAB = 0x6,
+  DT_RELA = 0x7,
+  DT_RELASZ = 0x8,
+  DT_RELAENT = 0x9,
+  DT_STRSZ = 0xA,
+  DT_SYMENT = 0xB,
+  DT_INIT = 0xC,
+  DT_FINI = 0xD,
+  DT_SONAME = 0xE,
+  DT_RPATH = 0xF,
+  DT_SYMBOLIC = 0x10,
+  DT_REL = 0x11,
+  DT_RELSZ = 0x12,
+  DT_RELENT = 0x13,
+  DT_PTRREL = 0x14,
+  DT_DEBUG = 0x15,
+  DT_TEXTREL = 0x16,
+  DT_JMPREL = 0x17,
+  DT_BIND_NOW = 0x18,
+  DT_INIT_ARRAY = 0x19,
+  DT_FINI_ARRAY = 0x1A,
+  DT_INIT_ARRAYSZ = 0x1B,
+  DT_FINI_ARRAYSZ = 0x1C,
+  DT_RUNPATH = 0x1D,
+  DT_FLAGS = 0x1E,
+  DT_ENCODING = 0x20,
+  DT_PREINIT_ARRAY = 0x20,
+  DT_PREINIT_ARRAYSZ = 0x21,
+  DT_NUM = 0x22,
+  OLD_DT_LOOS = 0x60000000,
+  DT_LOOS = 0x6000000D,
+  DT_HIOS = 0x6FFFF000,
+  DT_VALRNGLO = 0x6FFFFD00,
+  DT_VALRNGHI0 = 0x6FFFFDFF,
+  DT_ADDRRNGLO = 0x6FFFFE00,
+  DT_GNU_HASH = 0x6FFFFEF5,
+  DT_ADDRRNGHI = 0x6FFFFEFF,
+  DT_VERSYM = 0x6FFFFFF0,
+  DT_RELACOUNT = 0x6FFFFFF9,
+  DT_RELCOUNT = 0x6FFFFFFA,
+  DT_FLAGS_1 = 0x6FFFFFFB,
+  DT_VERDEF = 0x6FFFFFFC,
+  DT_VERDEFNUM = 0x6FFFFFFD,
+  DT_VERNEED = 0x6FFFFFFE,
+  DT_VERNEEDNUM = 0x6FFFFFFF,
+  OLD_DT_HIOS = 0x6FFFFFFF,
+  DT_LOPROC = 0x70000000,
+  DT_HIPROC = 0x7FFFFFFF,
+} Elf_DTs;
+
+typedef struct {
+    Elf_DTs d_tag;
+    union dyn_union32 {
+       uint      d_val;
+       uint      d_ptr;
+    } d_union32;
+}Elf32_Dyn <read=EnumToString(this.d_tag)>;
+
+typedef struct{
+    string data;
+} subStr;
+
+struct{
+    uint32 PT_DYNAMIC_OFF;       // 0 from 0x10
+    uint32 PT_DYNAMIC_COUNT;     // 1
+    uint32 STRTAB_OFF;           // 2 from 0x10
+    uint32 STRTAB_SIZE;         // 3
+    Elf32_Dyn dyn[PT_DYNAMIC_COUNT]<bgcolor=cLtYellow>;
+    local int start<hidden=true> = FTell();
+    for(local int i<hidden=true> = 0; i < PT_DYNAMIC_COUNT - 1; i++){
+        FSeek(0x10 + STRTAB_OFF + dyn[i].d_union32.d_ptr);
+        subStr dataStr<read=this.data, bgcolor=cLtBlue>;
+    }
+}table<open=true, optimize=false>;

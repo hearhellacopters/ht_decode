@@ -1,0 +1,85 @@
+//------------------------------------------------
+//--- 010 Editor v16.0.4 Binary Template
+//
+//      File: lib__57d5__tablesHeaderlessELF241.bt
+//   Authors: Hellacopters
+//   Version: v1.0.0
+//   Purpose: Research
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+local uint fileStart<hidden=true> = FTell();
+
+local uint strStart<hidden=true> = FTell();
+
+typedef enum <unsigned char> {
+    STT_NOTYPE      = 0x0,
+    STT_OBJECT      = 0x1,
+    STT_FUNC        = 0x2,
+    STT_SECTION     = 0x3,
+    STT_FILE        = 0x4,
+    STT_COMMON      = 0x5,
+    STT_TLS         = 0x6,
+    STT_NUM         = 0x7,
+    STT_LOOS        = 0xA,
+    STT_GNU_IFUNC   = 0xA,
+    STT_HIOS        = 0xB,
+    STT_LOPROC      = 0xC,
+    STT_HIPROC      = 0xD
+} sym_info_type_e;
+
+typedef enum <unsigned char> {
+    STB_LOCAL       = 0x0,
+    STB_GLOBAL      = 0x1,
+    STB_WEAK        = 0x2,
+    STB_NUM         = 0x3,
+    STB_LOOS        = 0xA,
+    STB_GNU_UNIQUE  = 0xA,
+    STB_HIOS        = 0xC,
+    STB_LOPROC      = 0xD,
+    STB_HIPROC      = 0xE,
+    STB_UNKNOWN     = 0xF
+} sym_info_bind_e;
+
+typedef struct {
+    BitfieldDisablePadding();
+    uchar sym_info_type:4;
+    uchar sym_info_bind:4;
+    BitfieldEnablePadding();
+} sym_info_t <read=SymInfoEnums>;
+
+string SymInfoEnums(sym_info_t &info) {
+    local sym_info_bind_e x = info.sym_info_bind;
+    local sym_info_type_e y = info.sym_info_type;
+    return EnumToString(x) + " | " + EnumToString(y);
+}
+
+typedef struct (){
+    uint st_name;
+    readStr(strStart + st_name);
+    uint st_value;
+    uint st_size;
+    sym_info_t st_info;
+    ubyte st_other;
+    ushort st_shndx;
+}Elf32_Sym<read=this.name>;
+
+string readStr(uint off){
+    local uint saver = FTell();
+    FSeek(off);
+    string name;
+    FSeek(saver);
+    return name;
+};
+
+struct{
+    uint SYMTAB_OFF;
+    uint SYMTAB_COUNT;
+    uint STRTAB_OFF;
+    strStart = fileStart + 0x14 + STRTAB_OFF;
+    uint STRTAB_SIZE;
+    uint FILE_SIZE;
+    Elf32_Sym Sym[SYMTAB_COUNT]<open=true, optimize=false>;
+} type241<open=true>;
