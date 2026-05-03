@@ -4,3 +4,5 @@ _lib*
 package-lock.json
 ht_decode.exe
 test_*
+libs/*
+!libs/lib__57d5__.so
