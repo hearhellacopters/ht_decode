@@ -1,0 +1,18 @@
+[
+    {
+        "offset": 0,
+        "str": "ro.build.version.sdk"
+    },
+    {
+        "offset": 24,
+        "str": "ro.build.version.release"
+    },
+    {
+        "offset": 52,
+        "str": "KeyLimePie"
+    },
+    {
+        "offset": 64,
+        "str": "KitKat"
+    }
+]

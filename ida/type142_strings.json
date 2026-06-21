@@ -1,0 +1,194 @@
+[
+    {
+        "offset": 0,
+        "str": "error_code"
+    },
+    {
+        "offset": 12,
+        "str": "error_time"
+    },
+    {
+        "offset": 24,
+        "str": "package_name"
+    },
+    {
+        "offset": 40,
+        "str": "manufacturer"
+    },
+    {
+        "offset": 56,
+        "str": "model"
+    },
+    {
+        "offset": 64,
+        "str": "version"
+    },
+    {
+        "offset": 72,
+        "str": "error1"
+    },
+    {
+        "offset": 80,
+        "str": "error2"
+    },
+    {
+        "offset": 88,
+        "str": "error3"
+    },
+    {
+        "offset": 96,
+        "str": "error4"
+    },
+    {
+        "offset": 104,
+        "str": "error5"
+    },
+    {
+        "offset": 112,
+        "str": "error6"
+    },
+    {
+        "offset": 120,
+        "str": "error7"
+    },
+    {
+        "offset": 128,
+        "str": "ErrorCode = %d%s"
+    },
+    {
+        "offset": 148,
+        "str": "%02d/%02d/%02d %02d:%02d:%02d%s"
+    },
+    {
+        "offset": 180,
+        "str": "%c%s=%d"
+    },
+    {
+        "offset": 188,
+        "str": "%c%s=%s"
+    },
+    {
+        "offset": 196,
+        "str": "ro.product.manufacturer"
+    },
+    {
+        "offset": 220,
+        "str": "ro.product.model"
+    },
+    {
+        "offset": 240,
+        "str": "ro.build.version.release"
+    },
+    {
+        "offset": 268,
+        "str": "ro.build.fingerprint"
+    },
+    {
+        "offset": 292,
+        "str": "%08x-%08x-%08x"
+    },
+    {
+        "offset": 308,
+        "str": "%%%02x"
+    },
+    {
+        "offset": 316,
+        "str": "EXTERNAL_STORAGE"
+    },
+    {
+        "offset": 336,
+        "str": "/sdcard"
+    },
+    {
+        "offset": 344,
+        "str": "%s/%s"
+    },
+    {
+        "offset": 352,
+        "str": "am start"
+    },
+    {
+        "offset": 364,
+        "str": " --user %d"
+    },
+    {
+        "offset": 376,
+        "str": " -f %#08x"
+    },
+    {
+        "offset": 388,
+        "str": " -a %s"
+    },
+    {
+        "offset": 396,
+        "str": "android.intent.action.MAIN"
+    },
+    {
+        "offset": 424,
+        "str": " -c %s"
+    },
+    {
+        "offset": 432,
+        "str": "android.intent.category.HOME"
+    },
+    {
+        "offset": 464,
+        "str": "android.intent.action.SENDTO"
+    },
+    {
+        "offset": 496,
+        "str": " -d \"%s:%s\""
+    },
+    {
+        "offset": 508,
+        "str": "mailto"
+    },
+    {
+        "offset": 516,
+        "str": " --es %s \"%s\""
+    },
+    {
+        "offset": 532,
+        "str": "android.intent.extra.SUBJECT"
+    },
+    {
+        "offset": 564,
+        "str": "android.intent.extra.TEXT"
+    },
+    {
+        "offset": 592,
+        "str": "android.intent.action.VIEW"
+    },
+    {
+        "offset": 620,
+        "str": " -d \"%s\""
+    },
+    {
+        "offset": 632,
+        "str": " -n \"%s/%s\""
+    },
+    {
+        "offset": 644,
+        "str": " --ei %s %d"
+    },
+    {
+        "offset": 656,
+        "str": " --es \"%s\" \"%s\""
+    },
+    {
+        "offset": 672,
+        "str": "/app_%04x"
+    },
+    {
+        "offset": 684,
+        "str": "/proc/"
+    },
+    {
+        "offset": 692,
+        "str": "/proc/%d/cmdline"
+    },
+    {
+        "offset": 712,
+        "str": "/proc/%d/task/%d/comm"
+    }
+]

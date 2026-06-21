@@ -1,0 +1,54 @@
+[
+    {
+        "offset": 0,
+        "str": "META-INF/MANIFEST.MF"
+    },
+    {
+        "offset": 24,
+        "str": "AndroidManifest.xml"
+    },
+    {
+        "offset": 44,
+        "str": "META-INF/"
+    },
+    {
+        "offset": 56,
+        "str": "base.apk"
+    },
+	{
+        "offset": 0,
+        "str": "-Digest:"
+    },
+    {
+        "offset": 12,
+        "str": "NAME:"
+    },
+    {
+        "offset": 20,
+        "str": "NAME:"
+    },
+    {
+        "offset": 28,
+        "str": "-Digest:"
+    },
+    {
+        "offset": 40,
+        "str": "META-INF/"
+    },
+    {
+        "offset": 52,
+        "str": "manifest"
+    },
+    {
+        "offset": 64,
+        "str": "application"
+    },
+    {
+        "offset": 76,
+        "str": "meta-data"
+    },
+    {
+        "offset": 88,
+        "str": "com.android.vending.derived.apk.id"
+    }
+]

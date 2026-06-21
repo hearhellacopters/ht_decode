@@ -1,0 +1,94 @@
+[
+    {
+        "offset": 0,
+        "str": "dlopen"
+    },
+    {
+        "offset": 8,
+        "str": "dlerror"
+    },
+    {
+        "offset": 16,
+        "str": "dlsym"
+    },
+    {
+        "offset": 24,
+        "str": "dlclose"
+    },
+    {
+        "offset": 32,
+        "str": "dladdr"
+    },
+    {
+        "offset": 40,
+        "str": "dlvsym"
+    },
+    {
+        "offset": 48,
+        "str": "dl_iterate_phdr"
+    },
+    {
+        "offset": 64,
+        "str": "dl_unwind_find_exidx"
+    },
+    {
+        "offset": 88,
+        "str": "__bss_start"
+    },
+    {
+        "offset": 100,
+        "str": "_edata"
+    },
+    {
+        "offset": 108,
+        "str": "__errno"
+    },
+    {
+        "offset": 116,
+        "str": "__system_property_get"
+    },
+    {
+        "offset": 140,
+        "str": "__android_log_assert"
+    },
+    {
+        "offset": 164,
+        "str": "__android_log_print"
+    },
+    {
+        "offset": 184,
+        "str": "__android_log_vprint"
+    },
+    {
+        "offset": 208,
+        "str": "__android_log_write"
+    },
+    {
+        "offset": 228,
+        "str": "_data_start__"
+    },
+    {
+        "offset": 244,
+        "str": "_data_end__"
+    },
+    {
+        "offset": 256,
+        "str": "data_start"
+    },
+    {
+        "offset": 268,
+        "str": "data_end"
+    },
+    {
+        "offset": 280,
+        "str": "__cxa_"
+    },
+    {
+        "offset": 288,
+        "str": "/proc/"
+    },
+    {
+        "offset": 296,
+        "str": "/proc/self/environ"
+    }
+]

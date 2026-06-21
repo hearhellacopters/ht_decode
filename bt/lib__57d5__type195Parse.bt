@@ -1,0 +1,42 @@
+//------------------------------------------------
+//--- 010 Editor v16.0.4 Binary Template
+//
+//      File: lib__57d5__type195Parse.bt
+//   Authors: Hellacopters
+//   Version: v1.0.0
+//   Purpose: Research
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+typedef struct (int dstBufferIndex){
+    int8 srcBufferIndex;
+    int8 gap[3]<hidden=true>;
+    if(srcBufferIndex != -1){
+        Assert(srcBufferIndex < 10);
+    }
+    int dstOffset<format=hex>;
+    local string dst = dstBufferIndex == -1 ? "MasterLib" : Str("chunk %d", dstBufferIndex);
+    local string src = srcBufferIndex == -1 ? "MasterLib" : Str("chunk %d", srcBufferIndex);
+}subStruct<read=Str("dst: %s off: 0x%X, srcAddress: %s", dst, this.dstOffset, src)>;
+
+typedef struct{
+    int dstBufferIndex<comment="-1 is master buffer">;
+    int unk4;
+    int thisBufferOffset;
+    int count;
+    local int saver<hidden=true> = FTell();
+    FSeek(thisBufferOffset);
+    subStruct srcData(dstBufferIndex)[count]<optimize=false>;
+    FSeek(saver);
+    local string dst<hidden=true> = dstBufferIndex == -1 ? "MasterLib" : Str("chunk %d", dstBufferIndex);
+}subTable<read=Str("dst: %s", dst)>;
+
+struct {
+    int count;
+    int thisBufferOffset;
+    FSeek(thisBufferOffset);
+    subTable dstData[count]<optimize=false>;
+} header;

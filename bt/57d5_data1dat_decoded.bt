@@ -1,0 +1,201 @@
+//------------------------------------------------
+//--- 010 Editor v16.0.4 Binary Template
+//
+//      File: 57d5_data1dat_decoded.bt
+//   Authors: Hellacopters
+//   Version: v1.0.0
+//   Purpose: Research
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+typedef struct{
+    string name;
+    local int len = Strlen(name) + 1;
+} str<read=this.name>;
+
+typedef enum <uint> {
+    HASH_BASIC  = 0,
+    HASH_HEADER = 1,
+    HASH_BY_32  = 2,
+    HASH_FIXED  = 3,
+}t_hashType;
+
+typedef struct{
+    uint offset;
+    uint type3Return;
+} data1dat4EntrySub3B;
+
+typedef struct{
+    t_hashType hashType;
+    uint hash;
+    uint addressStart;
+    uint size;
+    uint subBIndex;
+    uint subBCount;
+} data1dat4EntrySub3A;
+
+typedef struct(int start, int sizeNeeded){
+    local int saver<hidden=true> = FTell();
+    uint data1dat4EntrySub2IDOffset;
+    uint data1dat4EntrySub2subID;
+    uint classesdexSize;
+    uint dataC;
+    uint classesdexFileChecksum<format=hex>;
+    uint classesdexCompChecksum<format=hex>;
+    uint8 classesdexSHA1[20];
+    uint data2C;
+    uint data1dat4EntrySub2Offset1;
+    uint data1dat4EntrySub2Count1;
+    uint data1dat4EntrySub2Offset2;
+    uint data1dat4EntrySub2Count2;
+    FSeek(saver + data1dat4EntrySub2Offset1);
+    for(local int i<hidden=true> = 0; i < data1dat4EntrySub2Count1; i++ ){
+        data1dat4EntrySub3A entry4sub3a;
+    }
+    FSeek(saver + data1dat4EntrySub2Offset2);
+    for(i = 0; i < data1dat4EntrySub2Count2; i++ ){
+        data1dat4EntrySub3B entry4sub3b;
+    }
+    
+    //FSeek(start + offset);
+    //char data[sizeNeeded - offset];
+} data1dat4EntrySub2;
+
+typedef struct(int start, int sizeNeeded){
+    uint data1dat4EntrySub1Offset;
+    uint data1dat4EntrySub1Size;
+    uint data1dat4EntrySub1SubID;
+    uint dataC;
+    FSeek(start + data1dat4EntrySub1Offset);
+    data1dat4EntrySub2 entry4sub2(start, sizeNeeded - data1dat4EntrySub1Offset);
+} data1dat4EntrySub1;
+
+typedef struct(int sizeNeeded){
+    local int saver<hidden=true> = FTell();
+    uint data1dat4EntryCount;
+    uint data1dat4EntryOffset;
+    uint data8;
+    uint dataC;
+    FSeek(saver + data1dat4EntryOffset);
+    data1dat4EntrySub1 entry4sub1(saver, sizeNeeded - data1dat4EntryOffset);
+} data1dat4Entry;
+
+typedef struct (int strOffset){
+    uint strOffsetTable;
+    uint strCount;
+    uint fileSize;
+    uint data1hash;
+    uint data10;
+    uint data14;
+    uint data18;
+    local int saver<hidden=true> = FTell();
+    FSeek(strOffset + strOffsetTable);
+    string name;
+    FSeek(saver);
+}data1dat5EntrySub2<read=this.name>;
+
+typedef struct(int start, int strOffset){
+    local int saver<hidden=true> = FTell();
+    uint data0;
+    uint data4;
+    uint StrEntriesOffset32;
+    uint StrEntriesOffset64;
+    uint data10;
+    uint data14;
+    uint data18;
+    uint data1C;
+    uint data20;
+    uint data24;
+    uint strCount32;
+    uint strCount64;
+    uint data30;
+    uint data34;
+    FSeek(start + StrEntriesOffset32);
+    data1dat5EntrySub2 LibEntries32(strOffset)[strCount32]<optimize=false>;
+    FSeek(start + StrEntriesOffset64);
+    data1dat5EntrySub2 StrEntries654(strOffset)[strCount64]<optimize=false>;
+}data1dat5EntrySub1;
+
+typedef struct(int sizeNeeded){
+    local int saver<hidden=true> = FTell();
+    uint strOffset;
+    uint strSize;
+    uint flag;
+    uint dataC;
+    data1dat5EntrySub1 sub1(saver, saver + strOffset);
+    local int strSizeLeft<hidden=true> = 0;
+    FSeek(saver + strOffset);
+    do{
+        str name;
+        strSizeLeft += name.len;
+    }while(strSizeLeft < strSize);   
+}data1dat5Entry;
+
+typedef struct(int sizeNeeded, int strStart){
+    uint string1Offset;
+    uint string2Offset;
+    uint flag;
+    uint dataC;
+    local int saver<hidden=true> = FTell();
+    FSeek(strStart + string1Offset);
+    string fileName;
+    FSeek(strStart + string2Offset);
+    string FileHash;
+    FSeek(saver);
+}data1dat7EntrySub1<read= Str("%s: %s", this.fileName, this.FileHash)>;
+
+typedef struct(int sizeNeeded){
+    local int saver<hidden=true> = FTell();
+    uint entryCount;
+    uint flagCounter;
+    uint strSize;
+    uint entryOffOfStart<comment="*16">;
+    data1dat7EntrySub1 Sub1(sizeNeeded - 16, saver + 16 + (entryCount * 16))[entryCount]<optimize=false>;
+    char strData[strSize];
+}data1dat7Entry;
+
+typedef struct{
+    uint id;
+    uint offsetStart;
+    uint sizeNeeded;
+    uint dataC;
+    local int saver<hidden=true> = FTell();
+    FSeek(offsetStart);
+    switch(id){
+        case 4:
+            data1dat4Entry dexHashCheck(sizeNeeded)<bgcolor=cDkYellow>;
+            break;
+        case 5:
+            data1dat5Entry libHashCheck(sizeNeeded)<bgcolor=cDkYellow>;
+            break;
+        case 7:
+            data1dat7Entry assetHashCheck(sizeNeeded)<bgcolor=cDkBlue>;
+            break;
+        case 8:
+            char xmlData[sizeNeeded]<bgcolor=cDkBlue>;
+            break;
+        default:
+            char buffer[sizeNeeded]<bgcolor=cDkBlue>;
+            break;
+    }
+    
+    FSeek(saver);
+} entry;
+
+struct {
+    uint hash2Static<format=hex>;
+    uint hash1Gen<format=hex>;
+    uint hash3Static<format=hex>;
+    uint dataC;
+    uint seed<format=hex>;
+    uint data14;
+    uint entriesStart;
+    uint count;
+}header;
+
+if(header.count < 0xffff){
+    entry entires[header.count]<optimize=false>;
+}

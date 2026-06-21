@@ -1,5 +1,7 @@
 // @ts-check
 
+const {FS} = require('./File');
+
 /**
  * huffRLE
  * 
@@ -166,6 +168,57 @@ function decompressSlice(nodes, in_buf, in_len, out_buf) {
     return bytesReadFromInput + (currentCompressionLevel !== 0 ? 1 : 0) === in_len;
 };
 
+/**
+ * @param {Buffer} compTable 
+ * @param {Buffer} dst 
+ * @param {Buffer} src 
+ */
+function readDecompHeader(compTable, dst, src){
+    const dstStart       = src.readUint32LE(0x00);
+
+    const count          = src.readUint32LE(0x04);
+
+    const subHeaderStart = src.readUint32LE(0x08);
+
+    const dataStart      = src.readUint32LE(0x0C);
+
+    var curOffset = 0;
+
+    for (let i = 0; i < count; i++) {
+        const entryOffset = i * 0x10;
+
+        const dstOffset  = src.readUint32LE(subHeaderStart + entryOffset + 0x00);
+
+        const decompSize = src.readUint32LE(subHeaderStart + entryOffset + 0x04);
+
+        const compSize   = src.readUint32LE(subHeaderStart + entryOffset + 0x08);
+
+        const dataC      = src.readUint32LE(subHeaderStart + entryOffset + 0x0C);
+
+        const dstStartOffset = dstStart + dstOffset;
+
+        const dataStartOffset = dataStart + curOffset;
+        // not compressed
+        if(decompSize == compSize){
+            src.copy(dst, dstStartOffset, dataStartOffset, dataStartOffset + compSize);
+        }  else {
+            const input = src.subarray(dataStartOffset, dataStartOffset + compSize);
+
+            const output = dst.subarray(dstStartOffset, dstStartOffset + decompSize);
+
+            decompressSlice(
+                compTable, 
+                input, 
+                compSize, 
+                output
+            );
+        }
+        
+        curOffset += compSize;
+    }
+};
+
 module.exports = {
-    decompressSlice
+    decompressSlice,
+    readDecompHeader
 }

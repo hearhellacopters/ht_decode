@@ -1,0 +1,254 @@
+[
+    {
+        "offset": 0,
+        "str": "/system/build.prop"
+    },
+    {
+        "offset": 20,
+        "str": "ro.product.cpu.abi"
+    },
+    {
+        "offset": 40,
+        "str": "ro.product.manufacturer"
+    },
+    {
+        "offset": 64,
+        "str": "ro.product.model"
+    },
+    {
+        "offset": 84,
+        "str": "armeabi-v7a"
+    },
+    {
+        "offset": 96,
+        "str": "Google"
+    },
+    {
+        "offset": 104,
+        "str": "google"
+    },
+    {
+        "offset": 112,
+        "str": "samsung"
+    },
+    {
+        "offset": 120,
+        "str": "PIXEL"
+    },
+    {
+        "offset": 128,
+        "str": "PIXEL 2 XL"
+    },
+    {
+        "offset": 140,
+        "str": "SAMSUNG-SM-N900A"
+    },
+    {
+        "offset": 160,
+        "str": "SAMSUNG-SM-"
+    },
+    {
+        "offset": 172,
+        "str": "SM-G950F"
+    },
+    {
+        "offset": 184,
+        "str": "SM-N950F"
+    },
+    {
+        "offset": 196,
+        "str": "LGM-V300K"
+    },
+    {
+        "offset": 208,
+        "str": "/system/lib"
+    },
+    {
+        "offset": 220,
+        "str": "libhoudini.so"
+    },
+    {
+        "offset": 236,
+        "str": "/proc/bus/pci/devices"
+    },
+    {
+        "offset": 260,
+        "str": "ro.hardware"
+    },
+    {
+        "offset": 272,
+        "str": "goldfish"
+    },
+    {
+        "offset": 284,
+        "str": "ranchu"
+    },
+    {
+        "offset": 292,
+        "str": "ro.kernel.qemu"
+    },
+    {
+        "offset": 308,
+        "str": "/proc/interrupts"
+    },
+    {
+        "offset": 328,
+        "str": "vboxguest"
+    },
+    {
+        "offset": 340,
+        "str": "/system/lib/vboxguest.ko"
+    },
+    {
+        "offset": 368,
+        "str": "/system/lib/vboxsf.ko"
+    },
+    {
+        "offset": 392,
+        "str": "/system/lib/vboxvideo.ko"
+    },
+    {
+        "offset": 420,
+        "str": "bool checkFile()"
+    },
+    {
+        "offset": 440,
+        "str": "/sys/module/vboxguest"
+    },
+    {
+        "offset": 464,
+        "str": "/sys/module/vboxsf"
+    },
+    {
+        "offset": 484,
+        "str": "/sys/devices/virtual/misc/vboxuser"
+    },
+    {
+        "offset": 520,
+        "str": "/sys/devices/virtual/misc/vboxguest"
+    },
+    {
+        "offset": 556,
+        "str": "/proc/kallsyms"
+    },
+    {
+        "offset": 572,
+        "str": "jni/VBox.cpp"
+    },
+    {
+        "offset": 588,
+        "str": "jni/nox.cpp"
+    },
+    {
+        "offset": 600,
+        "str": "microvirt.enable_su"
+    },
+    {
+        "offset": 620,
+        "str": "init.svc.memud"
+    },
+    {
+        "offset": 636,
+        "str": "init.svc.microvirtd"
+    },
+    {
+        "offset": 656,
+        "str": "microvirtd.device.id"
+    },
+    {
+        "offset": 680,
+        "str": "com.microvirt.memuime"
+    },
+    {
+        "offset": 704,
+        "str": "com.microvirt.launcher"
+    },
+    {
+        "offset": 728,
+        "str": "com.microvirt.download"
+    },
+    {
+        "offset": 752,
+        "str": "com.microvirt.guide"
+    },
+    {
+        "offset": 772,
+        "str": "/system/bin/memud"
+    },
+    {
+        "offset": 792,
+        "str": "/system/bin/microvirtd"
+    },
+    {
+        "offset": 816,
+        "str": "/system/lib/memuguest.ko"
+    },
+    {
+        "offset": 844,
+        "str": "/system/lib/memusf.ko"
+    },
+    {
+        "offset": 868,
+        "str": "/system/bin/noxd"
+    },
+    {
+        "offset": 888,
+        "str": "bool checkFile()"
+    },
+    {
+        "offset": 908,
+        "str": "/proc/misc"
+    },
+    {
+        "offset": 920,
+        "str": " vboxuser"
+    },
+    {
+        "offset": 932,
+        "str": " vboxguest"
+    },
+    {
+        "offset": 944,
+        "str": "com.bluestacks.settings"
+    },
+    {
+        "offset": 968,
+        "str": "/proc"
+    },
+    {
+        "offset": 976,
+        "str": "interrupts"
+    },
+    {
+        "offset": 988,
+        "str": "net.andyroid.andysystem"
+    },
+    {
+        "offset": 1012,
+        "str": "/var/run/chrome"
+    },
+    {
+        "offset": 1028,
+        "str": "/proc/self/mounts"
+    },
+    {
+        "offset": 1048,
+        "str": "%s %s %s %s %d %d"
+    },
+    {
+        "offset": 1068,
+        "str": "/var/run/chrome/"
+    },
+    {
+        "offset": 1088,
+        "str": "/proc/"
+    },
+    {
+        "offset": 1096,
+        "str": "/proc/%d/status"
+    },
+    {
+        "offset": 1112,
+        "str": "Pid: %d"
+    }
+]

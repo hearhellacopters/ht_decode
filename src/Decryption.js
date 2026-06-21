@@ -311,9 +311,10 @@ function AES_decrypt(rk, keyLength, input, output) {
  * 
  * @param {Buffer} ELFBufferSlice 
  * @param {Buffer} inputRoundKeys 
+ * @param {number} inputSize
  * @returns 
  */
-function decryptSlice(ELFBufferSlice, inputRoundKeys) {
+function decryptSlice(ELFBufferSlice, inputRoundKeys, inputSize = ELFBufferSlice.byteLength) {
     if (!ELFBufferSlice || !inputRoundKeys || ELFBufferSlice.byteLength === 0) return 0;
 
     var tmpELFBuffer = ELFBufferSlice;
@@ -338,7 +339,7 @@ function decryptSlice(ELFBufferSlice, inputRoundKeys) {
 
         var currentBuffer = inputProcessingBuffer;
 
-        var roundsCheck = ELFBufferSlice.byteLength;
+        var roundsCheck = inputSize;
 
         let currentRound = 0;
 

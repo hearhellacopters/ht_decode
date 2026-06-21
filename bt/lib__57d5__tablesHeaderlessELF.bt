@@ -14,6 +14,100 @@
 local int strOff = 0;
 local uint start = FTell();
 
+typedef enum <uint8>
+{
+  R_ARM_NONE = 0x0,
+  R_ARM_PC24 = 0x1,
+  R_ARM_ABS32 = 0x2,
+  R_ARM_REL32 = 0x3,
+  R_ARM_PC13 = 0x4,
+  R_ARM_ABS16 = 0x5,
+  R_ARM_ABS12 = 0x6,
+  R_ARM_THM_ABS5 = 0x7,
+  R_ARM_ABS8 = 0x8,
+  R_ARM_SBREL32 = 0x9,
+  R_ARM_THM_PC22 = 0xA,
+  R_ARM_THM_PC8 = 0xB,
+  R_ARM_AMP_VCALL9 = 0xC,
+  R_ARM_SWI24 = 0xD,
+  R_ARM_TLS_DESC = 0xD,
+  R_ARM_THM_SWI8 = 0xE,
+  R_ARM_XPC25 = 0xF,
+  R_ARM_THM_XPC22 = 0x10,
+  R_ARM_TLS_DTPMOD32 = 0x11,
+  R_ARM_TLS_DTPOFF32 = 0x12,
+  R_ARM_TLS_TPOFF32 = 0x13,
+  R_ARM_COPY = 0x14,
+  R_ARM_GLOB_DAT = 0x15,
+  R_ARM_JUMP_SLOT = 0x16,
+  R_ARM_RELATIVE = 0x17,
+  R_ARM_GOTOFF = 0x18,
+  R_ARM_GOTPC = 0x19,
+  R_ARM_GOT32 = 0x1A,
+  R_ARM_PLT32 = 0x1B,
+  R_ARM_CALL = 0x1C,
+  R_ARM_JUMP24 = 0x1D,
+  R_ARM_THM_JUMP24 = 0x1E,
+  R_ARM_ALU_PCREL_7_0 = 0x20,
+  R_ARM_ALU_PCREL_15_8 = 0x21,
+  R_ARM_ALU_PCREL_23_15 = 0x22,
+  R_ARM_LDR_SBREL_11_0 = 0x23,
+  R_ARM_ALU_SBREL_19_12 = 0x24,
+  R_ARM_ALU_SBREL_27_20 = 0x25,
+  R_ARM_TARGET1 = 0x26,
+  R_ARM_V4BX = 0x28,
+  R_ARM_PREL31 = 0x2A,
+  R_ARM_MOVW_ABS_NC = 0x2B,
+  R_ARM_MOVT_ABS = 0x2C,
+  R_ARM_THM_MOVW_ABS_NC = 0x2F,
+  R_ARM_THM_MOVT_ABS = 0x30,
+  R_ARM_TLS_GOTDESC = 0x5A,
+  R_ARM_TLS_CALL = 0x5B,
+  R_ARM_TLS_DESCSEQ = 0x5C,
+  R_ARM_THM_TLS_CALL = 0x5D,
+  R_ARM_GNU_VTENTRY = 0x64,
+  R_ARM_GNU_VTINHERIT = 0x65,
+  R_ARM_THM_PC11 = 0x66,
+  R_ARM_THM_PC9 = 0x67,
+  R_ARM_TLS_GD32 = 0x68,
+  R_ARM_TLS_LDM32 = 0x69,
+  R_ARM_TLS_LDO32 = 0x6A,
+  R_ARM_TLS_IE32 = 0x6B,
+  R_ARM_TLS_LE32 = 0x6C,
+  R_ARM_THM_TLS_DESCSEQ = 0x81,
+  R_ARM_IRELATIVE = 0xA0,
+  R_ARM_RXPC25 = 0xF9,
+  R_ARM_RSBREL32 = 0xFA,
+  R_ARM_THM_RPC22 = 0xFB,
+  R_ARM_RREL32 = 0xFC,
+  R_ARM_RABS22 = 0xFD,
+  R_ARM_RPC24 = 0xFE,
+  R_ARM_RBASE = 0xFF,
+  R_ARM_NUM = 0x0,
+} rinfo;
+
+typedef enum <uint>
+{
+  PT_NULL = 0x0,
+  PT_LOAD = 0x1,
+  PT_DYNAMIC = 0x2,
+  PT_INTERP = 0x3,
+  PT_NOTE = 0x4,
+  PT_SHLIB = 0x5,
+  PT_PHDR = 0x6,
+  PT_TLS = 0x7,
+  PT_NUM = 0x8,
+  PT_LOOS = 0x60000000,
+  PT_HIOS = 0x6FFFFFFF,
+  PT_LOPROC = 0x70000000,
+  PT_HIPROC = 0x7FFFFFFF,
+  PT_GNU_EH_FRAME = 0x6474E550,
+  PT_GNU_STACK = 0x6474E551,
+  PT_GNU_RELRO = 0x6474E552,
+  PT_L4_STACK = 0x60000012,
+  PT_L4_AUX = 0x60000014,
+}Elf_PTs;
+
 typedef enum  <uint> 
 {
   DT_NULL = 0x0,
@@ -72,22 +166,6 @@ typedef enum  <uint>
   DT_HIPROC = 0x7FFFFFFF,
 } Elf_DTs;
 
-typedef struct {
-    Elf_DTs d_tag;
-    union dyn_union32 {
-       uint      d_val;
-       uint      d_ptr;
-    } d_union32;
-    if(d_tag == DT_NEEDED || d_tag == DT_SONAME){
-        local string name = ReadString(56 + strOff + d_union32.d_ptr);
-    }
-}Elf32_Dyn <read=EnumToString(this.d_tag)>;
-
-typedef struct {
-    uint r_offset;
-    uint r_info;
-}Elf32_Rel;
-
 typedef enum <unsigned char> {
     STT_NOTYPE      = 0x0,
     STT_OBJECT      = 0x1,
@@ -117,6 +195,41 @@ typedef enum <unsigned char> {
     STB_UNKNOWN     = 0xF
 } sym_info_bind_e;
 
+typedef enum <uint>
+{
+  PROT_READ = 0x1,
+  PROT_WRITE = 0x2,
+  PROT_EXEC = 0x4,
+  PROT_NONE = 0x0,
+  PROT_GROWSDOWN = 0x1000000,
+  PROT_GROWSUP = 0x2000000,
+  PROT_EXEC_READ = PROT_EXEC | PROT_READ,
+  PROT_EXEC_WRITE = PROT_EXEC | PROT_WRITE,
+} PROT;
+
+typedef enum <uint> 
+{
+    PF_None             = 0x0,
+    PF_Exec             = 0x1,
+    PF_Write            = 0x2,
+    PF_Write_Exec       = 0x3,
+    PF_Read             = 0x4,
+    PF_Read_Exec        = 0x5,
+    PF_Read_Write       = 0x6,
+    PF_Read_Write_Exec  = 0x7
+} p_flags_32;
+
+typedef struct {
+    Elf_DTs d_tag;
+    union dyn_union32 {
+       uint      d_val;
+       uint      d_ptr<format=hex>;
+    } d_union32;
+    if(d_tag == DT_NEEDED || d_tag == DT_SONAME){
+        local string name = ReadString(strOff + d_union32.d_ptr);
+    }
+}Elf32_Dyn <read=EnumToString(this.d_tag)>;
+
 typedef struct {
     BitfieldDisablePadding();
     uchar sym_info_type:4;
@@ -124,34 +237,12 @@ typedef struct {
     BitfieldEnablePadding();
 } sym_info_t <read=SymInfoEnums>;
 
-string SymInfoEnums(sym_info_t &info) {
-    local sym_info_bind_e x = info.sym_info_bind;
-    local sym_info_type_e y = info.sym_info_type;
-    return EnumToString(x) + " | " + EnumToString(y);
-}
-
-typedef struct {
-    string name;
-}getStr<read=this.name>;
-
-typedef struct (uint count){
-    local uint offset<hidden=true> = FTell() + count; 
-    do{
-        getStr name;
-    } while(FTell() < offset);
-}funcNames;
-
-string readStr(uint off){
-    local uint saver = FTell();
-    FSeek(56 + off);
-    string name;
-    FSeek(saver);
-    return name;
-};
-
 typedef struct (uint off){
     uint st_name;
-    readStr(off + st_name);
+    local uint saver<hidden=true> = FTell();
+    FSeek(off + st_name);
+    string name;
+    FSeek(saver);
     uint st_value;
     uint st_size;
     sym_info_t st_info;
@@ -166,62 +257,87 @@ typedef struct ( uint count, uint off){
     }
 } symRead;
 
-typedef enum <uint>
-{
-  PROT_READ = 0x1,
-  PROT_WRITE = 0x2,
-  PROT_EXEC = 0x4,
-  PROT_NONE = 0x0,
-  PROT_GROWSDOWN = 0x1000000,
-  PROT_GROWSUP = 0x2000000,
-  PROT_EXEC_READ = PROT_EXEC | PROT_READ,
-  PROT_EXEC_WRITE = PROT_EXEC | PROT_WRITE,
-} PROT;
+typedef struct (symRead &sym) {
+    uint r_offset<format=hex>;
+    rinfo r_info;
+    uint8 data0;
+    uint8 data1;
+    uint8 data2;
+    local int index = (uint32)data0 | ((uint32)data1 << 8) | ((uint32)data2 << 16);
+    if(index){
+        local string name = sym.sym[index].name;
+    } else {
+        local string name = "";
+    }
+}Elf32_Rel <read=Str("0x%x %s - %d %s", this.r_offset, EnumToString(this.r_info), this.index, this.name)>;
+
+string SymInfoEnums(sym_info_t &info) {
+    local sym_info_bind_e x = info.sym_info_bind;
+    local sym_info_type_e y = info.sym_info_type;
+    return EnumToString(x) + " | " + EnumToString(y);
+}
+
+typedef struct{
+    string name;
+}funcName<read=this.name>;
+
+typedef struct (uint size){
+    while(size){
+        funcName strtab<bgcolor=cLtBlue, optimize=false>;
+        size -= Strlen(strtab.name) + 1;
+    }
+}readStr;
 
 typedef struct  {
-    uint offset<format=hex>;
-    uint size<format=hex>;
-    PROT prot;
-    uint extra;
-}Seg;
+    Elf_PTs p_type;
+    uint p_offset<format=hex>;
+    uint p_vaddr<format=hex, comment="read offset within file.">;
+    uint p_paddr<format=hex>;
+    uint p_filesz;
+    uint p_memsz;
+    p_flags_32 p_flags;
+    uint p_align;
+}Elf32_Phdr;
 
 struct{
+    uint PROHEADDIR_OFF<bgcolor=cLtRed>;
+    uint PROHEADDIR_COUNT<bgcolor=cLtRed>;
     uint PT_DYNAMIC_OFF<bgcolor=cLtYellow, comment=".dynamic">; // Elf32_Dyn
     uint PT_DYNAMIC_COUNT<bgcolor=cLtYellow>;
+    uint STRTAB_OFF<bgcolor=cLtBlue, comment=".dynstr">; // string table
+    uint STRTAB_SIZE<bgcolor=cLtBlue>;  
+    uint SYMTAB_OFF<bgcolor=cLtYellow, comment=".dynsym">; // Elf32_Sym
+    uint SYMTAB_COUNT<bgcolor=cLtYellow>;  
     uint REL_OFF<bgcolor=cLtBlue, comment=".rel.dyn">; // Elf32_Rel
     uint REL_COUNT<bgcolor=cLtBlue>;
     uint JMPREL_OFF<bgcolor=cLtRed, comment=".rel.plt">; // Elf32_Rel
     uint JMPREL_COUNT<bgcolor=cLtRed>;
-    uint SYMTAB_OFF<bgcolor=cLtYellow, comment=".dynsym">; // Elf32_Sym
-    uint SYMTAB_COUNT<bgcolor=cLtYellow>;  
-    uint STRTAB_OFF<bgcolor=cLtBlue, comment=".dynstr">; // string table
-    uint STRTAB_COUNT<bgcolor=cLtBlue>;    
-    uint SEGMENT_OFF<bgcolor=cLtRed>;      // offsets for mprot flag
-    uint SEGMENT_COUNT<bgcolor=cLtRed>;
+    uint gap30;
+    uint gap34;
     uint MACHINE_TYPE<bgcolor=cLtYellow>; // 40 = arm32
     strOff = STRTAB_OFF;
+    if(PROHEADDIR_COUNT){
+        FSeek(start + PROHEADDIR_OFF);
+        Elf32_Phdr phdr[PROHEADDIR_COUNT]<bgcolor=cLtRed>;
+    }
     if(PT_DYNAMIC_COUNT){
-        FSeek(56 + start + PT_DYNAMIC_OFF);
+        FSeek(start + PT_DYNAMIC_OFF);
         Elf32_Dyn dym[PT_DYNAMIC_COUNT]<optimize=false, bgcolor=cLtYellow>;
     }
-    if(REL_COUNT){
-        FSeek(56 + start + REL_OFF);
-        Elf32_Rel rel[REL_COUNT]<bgcolor=cLtBlue, optimize=false>;
-    }
-    if(JMPREL_COUNT){
-        FSeek(56 + start + JMPREL_OFF);
-        Elf32_Rel jmprel[JMPREL_COUNT]<bgcolor=cLtRed, optimize=false>;
+    if(STRTAB_SIZE){
+        FSeek(start + STRTAB_OFF);
+        readStr strtab(STRTAB_SIZE);
     }
     if(SYMTAB_COUNT){
-        FSeek(56 + start + SYMTAB_OFF);
+        FSeek(start + SYMTAB_OFF);
         symRead symtab(SYMTAB_COUNT, STRTAB_OFF)<bgcolor=cLtYellow, optimize=false>;
     }
-    if(STRTAB_COUNT){
-        FSeek(56 + start + STRTAB_OFF);
-        funcNames strtab(STRTAB_COUNT)<bgcolor=cLtBlue, optimize=false>;
+    if(REL_COUNT){
+        FSeek(start + REL_OFF);
+        Elf32_Rel rel(symtab)[REL_COUNT]<bgcolor=cLtBlue, optimize=false>;
     }
-    if(SEGMENT_COUNT){
-        FSeek(56 + start + SEGMENT_OFF);
-        Seg seg[SEGMENT_COUNT]<bgcolor=cLtRed>;
+    if(JMPREL_COUNT){
+        FSeek(start + JMPREL_OFF);
+        Elf32_Rel jmprel(symtab)[JMPREL_COUNT]<bgcolor=cLtRed, optimize=false>;
     }
 } tableELF<open=true>;

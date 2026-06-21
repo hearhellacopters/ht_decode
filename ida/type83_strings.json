@@ -1,0 +1,46 @@
+[
+    {
+        "offset": 0,
+        "str": "/proc/%d/task/"
+    },
+    {
+        "offset": 16,
+        "str": ".odex"
+    },
+    {
+        "offset": 24,
+        "str": "/dev/ashmem/dalvik-classes.dex"
+    },
+    {
+        "offset": 56,
+        "str": "/dev/ashmem/dalvik-jit-code-cache"
+    },
+    {
+        "offset": 92,
+        "str": "/app_%04x"
+    },
+    {
+        "offset": 104,
+        "str": "/proc/%d/cmdline"
+    },
+    {
+        "offset": 124,
+        "str": "/proc/%d/task/%d/comm"
+    },
+    {
+        "offset": 148,
+        "str": "/proc/%d/status"
+    },
+    {
+        "offset": 164,
+        "str": "TracerPid:%d"
+    },
+    {
+        "offset": 180,
+        "str": "State: %c"
+    },
+    {
+        "offset": 192,
+        "str": "/proc/"
+    }
+]

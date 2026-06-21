@@ -1,0 +1,166 @@
+[
+    {
+        "offset": 0,
+        "str": "/apex/com.android.runtime/lib/libart.so"
+    },
+    {
+        "offset": 40,
+        "str": "libart.so"
+    },
+    {
+        "offset": 52,
+        "str": "_ZN3art3Dbg14SetJdwpAllowedEb"
+    },
+    {
+        "offset": 84,
+        "str": "_ZN3art3Dbg8StopJdwpEv"
+    },
+    {
+        "offset": 108,
+        "str": "_ZN3art3Dbg9gDisposedE"
+    },
+    {
+        "offset": 132,
+        "str": "_ZN3art3Dbg10IsDisposedEv"
+    },
+    {
+        "offset": 160,
+        "str": "_ZN3art3Dbg8DisposedEv"
+    },
+    {
+        "offset": 184,
+        "str": "libdvm.so"
+    },
+    {
+        "offset": 196,
+        "str": "persist.sys.dalvik.vm.lib.2"
+    },
+    {
+        "offset": 224,
+        "str": "TM105A"
+    },
+    {
+        "offset": 232,
+        "str": "TM75A"
+    },
+    {
+        "offset": 240,
+        "str": "TM75A-V"
+    },
+    {
+        "offset": 248,
+        "str": "/default.prop"
+    },
+    {
+        "offset": 264,
+        "str": "ro.runtime.firstboot"
+    },
+    {
+        "offset": 288,
+        "str": "ro.product.manufacturer"
+    },
+    {
+        "offset": 312,
+        "str": "FUJITSU"
+    },
+    {
+        "offset": 320,
+        "str": "gionee"
+    },
+    {
+        "offset": 328,
+        "str": "Huawei"
+    },
+    {
+        "offset": 336,
+        "str": "lemobile"
+    },
+    {
+        "offset": 348,
+        "str": "meizu"
+    },
+    {
+        "offset": 356,
+        "str": "OnePlus"
+    },
+    {
+        "offset": 364,
+        "str": "xiaomi"
+    },
+    {
+        "offset": 372,
+        "str": "google"
+    },
+    {
+        "offset": 380,
+        "str": "ro.product.model"
+    },
+    {
+        "offset": 400,
+        "str": "Pixel"
+    },
+    {
+        "offset": 408,
+        "str": "samsung"
+    },
+    {
+        "offset": 416,
+        "str": "BIOSTAR"
+    },
+    {
+        "offset": 424,
+        "str": "To Be Filled By O.E.M."
+    },
+    {
+        "offset": 448,
+        "str": "ro.product.model"
+    },
+    {
+        "offset": 468,
+        "str": "/proc/"
+    },
+    {
+        "offset": 476,
+        "str": "/proc/%d/cmdline"
+    },
+    {
+        "offset": 496,
+        "str": "/proc/%d/task/%d/comm"
+    },
+    {
+        "offset": 520,
+        "str": "/system/lib/libhoudini.so"
+    },
+    {
+        "offset": 548,
+        "str": "LD_LIBRARY_PATH"
+    },
+    {
+        "offset": 564,
+        "str": "/system/lib/"
+    },
+    {
+        "offset": 580,
+        "str": "/proc/%d/status"
+    },
+    {
+        "offset": 596,
+        "str": "Uid: %d %d %d %d"
+    },
+    {
+        "offset": 616,
+        "str": "/proc/%d/status"
+    },
+    {
+        "offset": 632,
+        "str": "TracerPid:%d"
+    },
+    {
+        "offset": 648,
+        "str": "State: %c"
+    },
+    {
+        "offset": 660,
+        "str": "/proc/self/environ"
+    }
+]

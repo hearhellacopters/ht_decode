@@ -1,0 +1,30 @@
+[
+    {
+        "offset": 0,
+        "str": ":tab1"
+    },
+    {
+        "offset": 8,
+        "str": "/proc/%d/cmdline"
+    },
+    {
+        "offset": 28,
+        "str": "/proc/%d/task/%d/comm"
+    },
+    {
+        "offset": 52,
+        "str": "/proc/%d/status"
+    },
+    {
+        "offset": 68,
+        "str": "TracerPid:%d"
+    },
+    {
+        "offset": 84,
+        "str": "State: %c"
+    },
+    {
+        "offset": 96,
+        "str": "/proc/"
+    }
+]

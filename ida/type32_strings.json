@@ -1,0 +1,154 @@
+[
+    {
+        "offset": 0,
+        "str": "%s/app-lib/%s-%d"
+    },
+    {
+        "offset": 20,
+        "str": "%s/app/%s-%d/lib"
+    },
+    {
+        "offset": 40,
+        "str": "/mnt/asec/%s-%d/lib"
+    },
+    {
+        "offset": 60,
+        "str": "%s/lib"
+    },
+    {
+        "offset": 68,
+        "str": "%s@%s"
+    },
+    {
+        "offset": 0,
+        "str": "/com.cyjh.mobileanjian"
+    },
+    {
+        "offset": 24,
+        "str": "/com.dualapp.multispace"
+    },
+    {
+        "offset": 48,
+        "str": "/com.kcm.cloneapp"
+    },
+    {
+        "offset": 68,
+        "str": "/io.va.exposed"
+    },
+    {
+        "offset": 84,
+        "str": "/com.rinzz.wdf"
+    },
+    {
+        "offset": 100,
+        "str": "/proc/self/comm"
+    },
+    {
+        "offset": 116,
+        "str": "/proc/self/"
+    },
+    {
+        "offset": 128,
+        "str": "%s/%s"
+    },
+    {
+        "offset": 136,
+        "str": ".text"
+    },
+    {
+        "offset": 0,
+        "str": "/vendor/lib:/system/lib"
+    },
+    {
+        "offset": 24,
+        "str": "/vendor/lib:/system/lib:/system/lib/arm"
+    },
+    {
+        "offset": 64,
+        "str": "LD_LIBRARY_PATH"
+    },
+    {
+        "offset": 80,
+        "str": "libc.so"
+    },
+    {
+        "offset": 88,
+        "str": "%s/%s"
+    },
+    {
+        "offset": 96,
+        "str": "ANDROID_DATA"
+    },
+    {
+        "offset": 112,
+        "str": "/data"
+    },
+    {
+        "offset": 120,
+        "str": "ANDROID_ROOT"
+    },
+    {
+        "offset": 136,
+        "str": "/system"
+    },
+    {
+        "offset": 144,
+        "str": "ASEC_MOUNTPOINT"
+    },
+    {
+        "offset": 160,
+        "str": "/mnt/asec"
+    },
+    {
+        "offset": 172,
+        "str": "ANDROID_ASSETS"
+    },
+    {
+        "offset": 188,
+        "str": "/system/app"
+    },
+    {
+        "offset": 200,
+        "str": "EXTERNAL_STORAGE"
+    },
+    {
+        "offset": 220,
+        "str": "/sdcard"
+    },
+    {
+        "offset": 228,
+        "str": "ANDROID_STORAGE"
+    },
+    {
+        "offset": 244,
+        "str": "/storage"
+    },
+    {
+        "offset": 256,
+        "str": "/proc/"
+    },
+    {
+        "offset": 264,
+        "str": "/proc/self/environ"
+    },
+    {
+        "offset": 284,
+        "str": "/proc/%d/cmdline"
+    },
+    {
+        "offset": 304,
+        "str": "/proc/%d/task/%d/comm"
+    },
+    {
+        "offset": 328,
+        "str": "/system/lib/libhoudini.so"
+    },
+    {
+        "offset": 356,
+        "str": "LD_LIBRARY_PATH"
+    },
+    {
+        "offset": 372,
+        "str": "/system/lib/"
+    }
+]

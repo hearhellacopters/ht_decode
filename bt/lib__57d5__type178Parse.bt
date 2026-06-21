@@ -1,0 +1,31 @@
+//------------------------------------------------
+//--- 010 Editor v16.0.4 Binary Template
+//
+//      File: lib__57d5__type178Parse.bt
+//   Authors: Hellacopters
+//   Version: v1.0.0
+//   Purpose: Research
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+local int totalCount = 0;
+
+typedef struct{
+    int index1;
+    int seedArea;
+    int count;
+    totalCount += count;
+    if(count){
+        int offsets[count]<format=hex>;
+    }
+}subTable<read=Str("count: %d", count)>;
+
+struct {
+    int count;
+    int thisBufferOffset;
+    FSeek(thisBufferOffset);
+    subTable data[count]<optimize=false>;
+} header;

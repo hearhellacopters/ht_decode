@@ -1,0 +1,138 @@
+[
+    {
+        "offset": 0,
+        "str": "/proc/self/cmdline"
+    },
+    {
+        "offset": 20,
+        "str": "split_config."
+    },
+    {
+        "offset": 36,
+        "str": "/base.apk"
+    },
+    {
+        "offset": 48,
+        "str": "/proc/self/exe"
+    },
+    {
+        "offset": 64,
+        "str": "ro.product.cpu.abi"
+    },
+    {
+        "offset": 84,
+        "str": "armeabi"
+    },
+    {
+        "offset": 92,
+        "str": "armeabi-v7a"
+    },
+    {
+        "offset": 104,
+        "str": "arm64-v8a"
+    },
+    {
+        "offset": 116,
+        "str": "x86_64"
+    },
+    {
+        "offset": 124,
+        "str": "mips64"
+    },
+    {
+        "offset": 132,
+        "str": "persist.sys.dalvik.vm.lib"
+    },
+    {
+        "offset": 160,
+        "str": "libart.so"
+    },
+    {
+        "offset": 172,
+        "str": "/system/lib/libhoudini.so"
+    },
+    {
+        "offset": 200,
+        "str": "__tmp__sec3__"
+    },
+    {
+        "offset": 216,
+        "str": "/system/lib/libhoudini.so"
+    },
+    {
+        "offset": 244,
+        "str": "%s/data/%s"
+    },
+    {
+        "offset": 256,
+        "str": "%s/user/%d/%s"
+    },
+    {
+        "offset": 272,
+        "str": "selinux.restorecon_recursive"
+    },
+    {
+        "offset": 304,
+        "str": "%s/data/%s/"
+    },
+    {
+        "offset": 316,
+        "str": "%s/user/%d/%s/"
+    },
+    {
+        "offset": 332,
+        "str": "ANDROID_DATA"
+    },
+    {
+        "offset": 348,
+        "str": "/data"
+    },
+    {
+        "offset": 356,
+        "str": "ANDROID_ROOT"
+    },
+    {
+        "offset": 372,
+        "str": "/system"
+    },
+    {
+        "offset": 380,
+        "str": "ASEC_MOUNTPOINT"
+    },
+    {
+        "offset": 396,
+        "str": "/mnt/asec"
+    },
+    {
+        "offset": 408,
+        "str": "ANDROID_ASSETS"
+    },
+    {
+        "offset": 424,
+        "str": "/system/app"
+    },
+    {
+        "offset": 436,
+        "str": "EXTERNAL_STORAGE"
+    },
+    {
+        "offset": 456,
+        "str": "/sdcard"
+    },
+    {
+        "offset": 464,
+        "str": "ANDROID_STORAGE"
+    },
+    {
+        "offset": 480,
+        "str": "/storage"
+    },
+    {
+        "offset": 492,
+        "str": "/proc/self/environ"
+    },
+    {
+        "offset": 512,
+        "str": "/proc/"
+    }
+]

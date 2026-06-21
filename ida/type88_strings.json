@@ -1,0 +1,22 @@
+[
+    {
+        "offset": 0,
+        "str": "1.2.3"
+    },
+    {
+        "offset": 8,
+        "str": "/app_%04x"
+    },
+    {
+        "offset": 20,
+        "str": "%s/data%d.db"
+    },
+    {
+        "offset": 36,
+        "str": "/proc/%d/cmdline"
+    },
+    {
+        "offset": 56,
+        "str": "/proc/%d/task/%d/comm"
+    }
+]

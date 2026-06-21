@@ -649,3 +649,9 @@ Lv2 ELF ->
 - 241 = `data241.bin` (No a lib. The symbol and string table to be added back to the master lib)
 - 242 = DT tables with no code (nameless but calling it `lib242.so`)
 - 240 = `libLvDecode.so`
+
+## Additional Research
+
+It was found that later the libs use the section table offset from `SHT_LOUSER` to store the data, not hard offsets for the table reads.
+
+Added additional check at the start for `SHT_LOUSER` section for offsetting.

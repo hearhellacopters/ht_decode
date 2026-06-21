@@ -1,0 +1,79 @@
+//------------------------------------------------
+//--- 010 Editor v16.0.4 Binary Template
+//
+//      File: lib__57d5__type158Parse64.bt
+//   Authors: Hellacopters
+//   Version: v1.0.0
+//   Purpose: Research
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+int pageAlign(int a1, int a2, int a3){
+    if ( ((a2 - 1) & a1) != 0 )
+    {
+        if ( !a3 )
+        {
+          a2 = 0;
+        }
+        return a2 + (-a2 & a1);
+    }
+    return a1;
+};
+
+typedef struct{
+    string name;
+}readString<read=this.name>;
+
+typedef struct (string name){
+    local string symname = name;
+    uint sym_name;
+    char sym_info;
+    char sym_other;
+    short sym_shndx;
+    uint64 sym_value<format=hex>;
+    uint64 sym_size;
+} symtab<read=this.symname>;
+
+struct{
+    int DTLinkOffset;
+    int DTLinkSize;
+    local int DynStart <hidden=true> = FTell();
+    int DynSymCount;
+    int DynSymOffset;
+    int IndexOffset;
+    int DynStrOffset;
+    local int i<hidden=true> = 0;
+    local int saver<hidden=true> = FTell();
+    // parse Stings
+    FSeek(DynStart + DynStrOffset);
+    readString symStr[DynSymCount]<optimize=false>;
+    // parse indexes
+    FSeek(DynStart + IndexOffset);
+    int indexes[DynSymCount];
+    // parse DynSym
+    FSeek(DynStart + DynSymOffset);
+    for(i = 0; i < DynSymCount; i++){
+        saver = FTell();
+        FSeek(DynStart + IndexOffset + (i*4));
+        int index<hidden=true>;
+        FSeek(saver);
+        symtab DynSym(
+            symStr[i].name
+            );
+    }
+    // parse DTLink
+    FSeek(pageAlign(DTLinkOffset, 4, 1) + 8);
+    local int starting <hidden=true> = FTell();
+    int stringcount;
+    saver = FTell();
+    for(i = 0; i < stringcount; i++){
+        FSeek(saver);
+        int offset<hidden=true>;
+        saver = FTell();
+        FSeek(starting + offset);
+        readString DTString;
+    }
+} type158<open=true>;

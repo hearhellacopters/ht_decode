@@ -1,0 +1,34 @@
+[
+    {
+        "offset": 0,
+        "str": "ro.product.model"
+    },
+    {
+        "offset": 20,
+        "str": "ro.build.id"
+    },
+    {
+        "offset": 32,
+        "str": "N-01D"
+    },
+    {
+        "offset": 40,
+        "str": "A1003801"
+    },
+    {
+        "offset": 52,
+        "str": "ro.product.cpu.abi"
+    },
+    {
+        "offset": 72,
+        "str": "ro.build.version.release"
+    },
+    {
+        "offset": 100,
+        "str": "/proc/%d/cmdline"
+    },
+    {
+        "offset": 120,
+        "str": "/proc/%d/task/%d/comm"
+    }
+]

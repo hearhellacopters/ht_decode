@@ -1,0 +1,218 @@
+[
+    {
+        "offset": 0,
+        "str": "classes.dex"
+    },
+    {
+        "offset": 12,
+        "str": "classes"
+    },
+    {
+        "offset": 20,
+        "str": "/dev/ashmem/dalvik-classes.dex"
+    },
+    {
+        "offset": 52,
+        "str": "/data/dalvik-cache"
+    },
+    {
+        "offset": 72,
+        "str": "base.odex"
+    },
+    {
+        "offset": 84,
+        "str": "classes.vdex"
+    },
+    {
+        "offset": 100,
+        "str": "dalvik-cache/"
+    },
+    {
+        "offset": 116,
+        "str": "base.vdex"
+    },
+    {
+        "offset": 128,
+        "str": "/dev/ashmem/dalvik-classes.dex"
+    },
+    {
+        "offset": 160,
+        "str": "dalvik-classes.dex"
+    },
+    {
+        "offset": 180,
+        "str": "--zip-fd"
+    },
+    {
+        "offset": 192,
+        "str": "--zip-location"
+    },
+    {
+        "offset": 208,
+        "str": "--oat-fd"
+    },
+    {
+        "offset": 220,
+        "str": "--oat-location"
+    },
+    {
+        "offset": 236,
+        "str": "--instruction-set"
+    },
+    {
+        "offset": 256,
+        "str": "bin/dex2oat"
+    },
+    {
+        "offset": 268,
+        "str": "%s/%s"
+    },
+    {
+        "offset": 276,
+        "str": " %s=%d"
+    },
+    {
+        "offset": 284,
+        "str": " %s=\"%s\""
+    },
+    {
+        "offset": 296,
+        "str": "x86_64"
+    },
+    {
+        "offset": 304,
+        "str": "arm64"
+    },
+    {
+        "offset": 312,
+        "str": "--swap-file"
+    },
+    {
+        "offset": 324,
+        "str": "--swap-fd"
+    },
+    {
+        "offset": 336,
+        "str": "--dex-file"
+    },
+    {
+        "offset": 348,
+        "str": "--oat-file"
+    },
+    {
+        "offset": 360,
+        "str": "--input-vdex-file"
+    },
+    {
+        "offset": 380,
+        "str": "--input-vdex-fd"
+    },
+    {
+        "offset": 396,
+        "str": "--output-vdex-fd"
+    },
+    {
+        "offset": 416,
+        "str": "--output-vdex-file"
+    },
+    {
+        "offset": 436,
+        "str": "dex2oat-cmdline"
+    },
+    {
+        "offset": 452,
+        "str": "classes"
+    },
+    {
+        "offset": 460,
+        "str": "ballast"
+    },
+    {
+        "offset": 468,
+        "str": "%s/%s"
+    },
+    {
+        "offset": 476,
+        "str": "%s/%s"
+    },
+    {
+        "offset": 0,
+        "str": "oatdata"
+    },
+    {
+        "offset": 8,
+        "str": "oatexec"
+    },
+    {
+        "offset": 16,
+        "str": "oatlastword"
+    },
+    {
+        "offset": 28,
+        "str": "ANDROID_DATA"
+    },
+    {
+        "offset": 44,
+        "str": "/data"
+    },
+    {
+        "offset": 52,
+        "str": "ANDROID_ROOT"
+    },
+    {
+        "offset": 68,
+        "str": "/system"
+    },
+    {
+        "offset": 76,
+        "str": "ASEC_MOUNTPOINT"
+    },
+    {
+        "offset": 92,
+        "str": "/mnt/asec"
+    },
+    {
+        "offset": 104,
+        "str": "ANDROID_ASSETS"
+    },
+    {
+        "offset": 120,
+        "str": "/system/app"
+    },
+    {
+        "offset": 132,
+        "str": "EXTERNAL_STORAGE"
+    },
+    {
+        "offset": 152,
+        "str": "/sdcard"
+    },
+    {
+        "offset": 160,
+        "str": "ANDROID_STORAGE"
+    },
+    {
+        "offset": 176,
+        "str": "/storage"
+    },
+    {
+        "offset": 188,
+        "str": "/app_%04x"
+    },
+    {
+        "offset": 200,
+        "str": "/proc/self/environ"
+    },
+    {
+        "offset": 220,
+        "str": "/proc/%d/cmdline"
+    },
+    {
+        "offset": 240,
+        "str": "/proc/%d/task/%d/comm"
+    },
+    {
+        "offset": 264,
+        "str": "/proc/"
+    }
+]

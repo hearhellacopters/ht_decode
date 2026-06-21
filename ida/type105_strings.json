@@ -1,0 +1,278 @@
+[
+    {
+        "offset": 0,
+        "str": "persist.sys.usb.config"
+    },
+    {
+        "offset": 24,
+        "str": "sys.usb.config"
+    },
+    {
+        "offset": 40,
+        "str": "persist.service.adb.enable"
+    },
+    {
+        "offset": 68,
+        "str": "eu.chainfire.supersu"
+    },
+    {
+        "offset": 92,
+        "str": "eu.chainfire.supersu.pro"
+    },
+    {
+        "offset": 120,
+        "str": "eu.chainfire.suhide"
+    },
+    {
+        "offset": 140,
+        "str": "com.noshufou.android.su"
+    },
+    {
+        "offset": 164,
+        "str": "com.koushikdutta.superuser"
+    },
+    {
+        "offset": 192,
+        "str": "me.phh.superuser"
+    },
+    {
+        "offset": 212,
+        "str": "cat.dcat.roothide"
+    },
+    {
+        "offset": 232,
+        "str": "de.robv.android.xposed.installer"
+    },
+    {
+        "offset": 268,
+        "str": "com.saurik.substrate"
+    },
+    {
+        "offset": 292,
+        "str": "com.topjohnwu.magisk"
+    },
+    {
+        "offset": 316,
+        "str": "com.loserskater.suhidegui"
+    },
+    {
+        "offset": 344,
+        "str": "cn.mc.sq"
+    },
+    {
+        "offset": 356,
+        "str": "cn.mc1.sq"
+    },
+    {
+        "offset": 368,
+        "str": "com.cih.game_cih"
+    },
+    {
+        "offset": 388,
+        "str": "pl.aqua.gameguardian"
+    },
+    {
+        "offset": 412,
+        "str": "org.sbtools.gamehack"
+    },
+    {
+        "offset": 436,
+        "str": "com.hexview.android.memspector"
+    },
+    {
+        "offset": 468,
+        "str": "mr.big.stuff"
+    },
+    {
+        "offset": 484,
+        "str": "/proc/self/exe"
+    },
+    {
+        "offset": 500,
+        "str": "/proc/self/cmdline"
+    },
+    {
+        "offset": 520,
+        "str": "xposed"
+    },
+    {
+        "offset": 528,
+        "str": "/root"
+    },
+    {
+        "offset": 536,
+        "str": "/proc/timer_list"
+    },
+    {
+        "offset": 556,
+        "str": " magisk/"
+    },
+    {
+        "offset": 568,
+        "str": " magisk."
+    },
+    {
+        "offset": 580,
+        "str": " suhide/"
+    },
+    {
+        "offset": 592,
+        "str": " deamonsu/"
+    },
+    {
+        "offset": 604,
+        "str": "com.bluestacks"
+    },
+    {
+        "offset": 620,
+        "str": "%s %s %s %s %d %d"
+    },
+    {
+        "offset": 640,
+        "str": "/magisk"
+    },
+    {
+        "offset": 648,
+        "str": "/system"
+    },
+    {
+        "offset": 656,
+        "str": "/sbin/su"
+    },
+    {
+        "offset": 668,
+        "str": "/sbin/demonsu"
+    },
+    {
+        "offset": 684,
+        "str": "/sbin/supersu"
+    },
+    {
+        "offset": 700,
+        "str": "vboxsf"
+    },
+    {
+        "offset": 708,
+        "str": "/proc/"
+    },
+    {
+        "offset": 716,
+        "str": "/mounts"
+    },
+    {
+        "offset": 724,
+        "str": "/proc/self/mounts"
+    },
+    {
+        "offset": 744,
+        "str": "/su/suhide"
+    },
+    {
+        "offset": 756,
+        "str": "/system/app/superuser.apk"
+    },
+    {
+        "offset": 784,
+        "str": "/system/app/Superuser.apk"
+    },
+    {
+        "offset": 812,
+        "str": "/system/app/SuperUser.apk"
+    },
+    {
+        "offset": 840,
+        "str": "/system/app/SUPERUSER.apk"
+    },
+    {
+        "offset": 868,
+        "str": "XposedBridge.jar"
+    },
+    {
+        "offset": 888,
+        "str": "com.saurik.substrate"
+    },
+    {
+        "offset": 912,
+        "str": "/dev/__properties__"
+    },
+    {
+        "offset": 932,
+        "str": "init.svc.magisk"
+    },
+    {
+        "offset": 948,
+        "str": "[anon:bionic TLS]"
+    },
+    {
+        "offset": 968,
+        "str": "[anon:libc_malloc]"
+    },
+    {
+        "offset": 988,
+        "str": "/sbin/."
+    },
+    {
+        "offset": 996,
+        "str": "bin/app_process"
+    },
+    {
+        "offset": 1012,
+        "str": "bin/app_process32"
+    },
+    {
+        "offset": 1032,
+        "str": "ANDROID_DATA"
+    },
+    {
+        "offset": 1048,
+        "str": "/data"
+    },
+    {
+        "offset": 1056,
+        "str": "ANDROID_ROOT"
+    },
+    {
+        "offset": 1072,
+        "str": "/system"
+    },
+    {
+        "offset": 1080,
+        "str": "ASEC_MOUNTPOINT"
+    },
+    {
+        "offset": 1096,
+        "str": "/mnt/asec"
+    },
+    {
+        "offset": 1108,
+        "str": "ANDROID_ASSETS"
+    },
+    {
+        "offset": 1124,
+        "str": "/system/app"
+    },
+    {
+        "offset": 1136,
+        "str": "EXTERNAL_STORAGE"
+    },
+    {
+        "offset": 1156,
+        "str": "/sdcard"
+    },
+    {
+        "offset": 1164,
+        "str": "ANDROID_STORAGE"
+    },
+    {
+        "offset": 1180,
+        "str": "/storage"
+    },
+    {
+        "offset": 1192,
+        "str": "/proc/"
+    },
+    {
+        "offset": 1200,
+        "str": "/proc/self/environ"
+    }
+]
