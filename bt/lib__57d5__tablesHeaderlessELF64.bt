@@ -338,17 +338,17 @@ typedef struct  {
 }Elf64_Phdr;
 
 struct{
-    uint PROHEADDIR_OFF<bgcolor=cLtRed>;
+    uint PROHEADDIR_OFF<bgcolor=cLtRed>; // Elf64_Phdr
     uint PROHEADDIR_COUNT<bgcolor=cLtRed>;
-    uint PT_DYNAMIC_OFF<bgcolor=cLtYellow, comment=".dynamic">; // Elf32_Dyn
+    uint PT_DYNAMIC_OFF<bgcolor=cLtYellow, comment=".dynamic">; // Elf64_Dyn
     uint PT_DYNAMIC_COUNT<bgcolor=cLtYellow>;
-    uint STRTAB_OFF<bgcolor=cLtBlue, comment=".dynstr">; // string table
+    uint STRTAB_OFF<bgcolor=cLtBlue, comment=".dynstr">; // String Table
     uint STRTAB_SIZE<bgcolor=cLtBlue>;  
-    uint SYMTAB_OFF<bgcolor=cLtYellow, comment=".dynsym">; // Elf32_Sym
+    uint SYMTAB_OFF<bgcolor=cLtYellow, comment=".dynsym">; // Elf64_Sym
     uint SYMTAB_COUNT<bgcolor=cLtYellow>;  
-    uint REL_OFF<bgcolor=cLtBlue, comment=".rel.dyn">; // Elf32_Rel
+    uint REL_OFF<bgcolor=cLtBlue, comment=".rela.dyn">; // Elf64_Rela
     uint REL_COUNT<bgcolor=cLtBlue>;
-    uint JMPREL_OFF<bgcolor=cLtRed, comment=".rel.plt">; // Elf32_Rel
+    uint JMPREL_OFF<bgcolor=cLtRed, comment=".rela.plt">; // Elf64_Rela
     uint JMPREL_COUNT<bgcolor=cLtRed>;
     uint gap30;
     uint gap34;
@@ -356,26 +356,27 @@ struct{
     strOff = STRTAB_OFF;
     if(PROHEADDIR_COUNT){
         FSeek(start + PROHEADDIR_OFF);
-        Elf64_Phdr phdr[PROHEADDIR_COUNT]<bgcolor=cLtRed>;
+        Elf64_Phdr Elf_Phdr[PROHEADDIR_COUNT]<bgcolor=cLtRed>;
     }
     if(PT_DYNAMIC_COUNT){
         FSeek(start + PT_DYNAMIC_OFF);
-        Elf64_Dyn dym[PT_DYNAMIC_COUNT]<optimize=false, bgcolor=cLtYellow>;
+        Elf64_Dyn Elf_Dyn[PT_DYNAMIC_COUNT]<optimize=false, bgcolor=cLtYellow>;
     }
-    if(STRTAB_SIZE){
+    local int strSize<hidden=true> = STRTAB_SIZE;
+    if(strSize){
         FSeek(start + STRTAB_OFF);
-        readStr strtab(STRTAB_SIZE);
+        readStr Elf_StrTab(STRTAB_SIZE);
     }
     if(SYMTAB_COUNT){
         FSeek(start + SYMTAB_OFF);
-        symRead symtab(SYMTAB_COUNT, STRTAB_OFF)<bgcolor=cLtYellow, optimize=false>;
+        symRead Elf_Sym(SYMTAB_COUNT, STRTAB_OFF)<bgcolor=cLtYellow, optimize=false>;
     }
     if(REL_COUNT){
         FSeek(start + REL_OFF);
-        Elf64_Rela rel(symtab)[REL_COUNT]<bgcolor=cLtBlue, optimize=false>;
+        Elf64_Rela Elf_Rel(Elf_Sym)[REL_COUNT]<bgcolor=cLtBlue, optimize=false>;
     }
     if(JMPREL_COUNT){
         FSeek(start + JMPREL_OFF);
-        Elf64_Rela jmprel(symtab)[JMPREL_COUNT]<bgcolor=cLtRed, optimize=false>;
+        Elf64_Rela Elf_JmpRel(Elf_Sym)[JMPREL_COUNT]<bgcolor=cLtRed, optimize=false>;
     }
 } tableELF<open=true>;

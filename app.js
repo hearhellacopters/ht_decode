@@ -1492,27 +1492,6 @@ if(ARGV.data1){
         console.log(`[!] type${data157meta.elfType} Slice:`, FS.makeOffset(offsetTracker + data157meta.SliceTableOffset));
         // adds programming
         MASTER_ELF_DATA = decodeNextLvSub(SliceTableOffset, AES_TABLE6, Lv6Seed, MASTER_ELF_DATA);
-
-        const dataHeadersOffset = Lv6Buffer.subarray(data157meta.ELFHeadersOffset, Lv6Buffer.length);
-
-        console.log(`[!] type${data157meta.elfType} Headers:`, FS.makeOffset(offsetTracker + data157meta.ELFHeadersOffset));
-
-        const dataHeaders = decodeNextLvSub(dataHeadersOffset, AES_TABLE6, Lv6Seed);
-
-        console.log(`[*] Creating IDA rename script.`);
-
-        FS.writeFile(dataHeaders, path.join(OUTPUT_PATH, `${INPUT_LIB_NAME}_Lv5_type157_headers.dat`));
-        // Convert 157 headers into python script for renaming
-        const { REL, JMPREL } = isARM32 ? parse157Headers32(dataHeaders) : parse157Headers64(dataHeaders);
-        // 185 copies offset to direct c functions (memset, strcpy etc) pulled from Lv6
-        // add them to jmp
-        if(data185){
-            parse185(data185, JMPREL);
-        }
-
-        const pyStript =  makePythonReplacementScript(REL, JMPREL);
-        
-        FS.writeFile(pyStript, path.join(OUTPUT_PATH, `ida_renamer_${INPUT_LIB_NAME}.py`));
         // parse 195 and use offsets to spit 194 data
         if(isARM32 && data194 && data195 && ARGV.offsets6 && offsetsBuffer6){
             console.log(`[*] Matching function offsets.`);
@@ -1593,9 +1572,30 @@ if(ARGV.data1){
             }
         }
 
-        isARM32 ? 
+        const dataHeadersOffset = Lv6Buffer.subarray(data157meta.ELFHeadersOffset, Lv6Buffer.length);
+
+        console.log(`[*] Creating IDA rename script.`);
+
+        console.log(`[!] type${data157meta.elfType} Headers:`, FS.makeOffset(offsetTracker + data157meta.ELFHeadersOffset));
+
+        const dataHeaders = decodeNextLvSub(dataHeadersOffset, AES_TABLE6, Lv6Seed);
+
+        FS.writeFile(dataHeaders, path.join(OUTPUT_PATH, `${INPUT_LIB_NAME}_Lv5_type157_headers.dat`));
+        // Convert 157 headers into python script for renaming
+        const { REL, JMPREL } = isARM32 ? parse157Headers32(dataHeaders) : parse157Headers64(dataHeaders);
+        // 185 copies offset to direct c functions (memset, strcpy etc) pulled from Lv6
+        // add them to jmp
+        if(data185){
+            parse185(data185, JMPREL);
+        }
+        const {diff, min }= isARM32 ? 
             fixData32_SIZE(MASTER_ELF_DATA) : 
             fixData64_SIZE(MASTER_ELF_DATA);
+
+        const pyStript =  makePythonReplacementScript(REL, JMPREL, min, diff);
+        
+        FS.writeFile(pyStript, path.join(OUTPUT_PATH, `ida_renamer_${INPUT_LIB_NAME}.py`));
+        
 
         FS.writeFile(MASTER_ELF_DATA, path.join(OUTPUT_PATH, INPUT_LIB_NAME + "_decrypted.so"));
 

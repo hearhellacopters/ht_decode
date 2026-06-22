@@ -543,6 +543,10 @@ function fixData32_SIZE(inputBuffer) {
     }
 
     const PHCount = inputBuffer.readUint16LE(0x2C);
+
+    var diff = 0;
+
+    var min = 0;
     
     for (let i = 0; i < PHCount; i++) {
         const PHEntry = PHOffset + (i * PHEntrySize);
@@ -556,13 +560,22 @@ function fixData32_SIZE(inputBuffer) {
 
             const vaddr = inputBuffer.readUint32LE(PHEntry + 0x08);
 
+            min = offset;
+
             const size = inputBuffer.readUint32LE(PHEntry + 0x10);
 
-            inputBuffer.writeUint32LE(size + (vaddr - offset), PHEntry + 0x10);
+            diff = (vaddr - offset);
+
+            inputBuffer.writeUint32LE(size + diff, PHEntry + 0x10);
 
             break;
         }
     }
+
+    return {
+        diff,
+        min
+    }; 
 };
 
 /**
@@ -766,6 +779,10 @@ function fixData64_SIZE(inputBuffer) {
 
     const PHCount = inputBuffer.readUint16LE(0x38);
 
+    var diff = 0n;
+
+    var min = 0;
+
     for (let i = 0; i < PHCount; i++) {
         const PHEntry = PHOffset + (i * PHEntrySize);
 
@@ -778,13 +795,22 @@ function fixData64_SIZE(inputBuffer) {
 
             const vaddr = inputBuffer.readBigUInt64LE(PHEntry + 0x10);
 
+            min = Number(offset);
+
             const size = inputBuffer.readBigUInt64LE(PHEntry + 0x20);
 
-            inputBuffer.writeBigUInt64LE(size + (vaddr - offset), PHEntry + 0x20);
+            diff = (vaddr - offset);
+
+            inputBuffer.writeBigUInt64LE(size + diff, PHEntry + 0x20);
 
             break;
         }
     }
+
+    return {
+        diff: Number(diff),
+        min
+    };
 };
 
 /**
@@ -1328,14 +1354,22 @@ print("Done")`;
  * 
  * @param {{offset: number, name: string}[]} REL 
  * @param {{offset: number, name: string}[]} JMPREL 
+ * @param {number} min 
+ * @param {number} diff 
  */
-function makePythonReplacementScript(REL, JMPREL) {
+function makePythonReplacementScript(REL, JMPREL, min, diff) {
     const RELEntries = [];
 
     for (let i = 0; i < REL.length; i++) {
         const el = REL[i];
 
-        const entry = `    ${FS.makeOffset(el.offset)}: "${el.name}",`;
+        var off = el.offset;
+
+        if(off >= min){
+            off += diff;
+        }
+
+        const entry = `    ${FS.makeOffset(off)}: "${el.name}",`;
 
         RELEntries.push(entry);
     }
@@ -1345,7 +1379,13 @@ function makePythonReplacementScript(REL, JMPREL) {
     for (let i = 0; i < JMPREL.length; i++) {
         const el = JMPREL[i];
 
-        const entry = `    ${FS.makeOffset(el.offset)}: "${el.name}",`;
+        var off = el.offset;
+
+        if(off >= min){
+            off += diff;
+        }
+
+        const entry = `    ${FS.makeOffset(off)}: "${el.name}",`;
 
         JMPRELEntries.push(entry);
     }
