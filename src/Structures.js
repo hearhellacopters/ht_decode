@@ -150,8 +150,6 @@ function readLvInfo(inputBuffer, offset) {
     }
 };
 
-const TABLE_ENTRY_SIZE = 0x38;
-
 /**
  * Reads Table Info
  * 
@@ -159,6 +157,8 @@ const TABLE_ENTRY_SIZE = 0x38;
  * @param {number} offset 
  */
 function readTableEntry(inputBuffer, offset) {
+    const TABLE_ENTRY_SIZE = 0x38;
+
     if (inputBuffer.byteLength < offset + TABLE_ENTRY_SIZE) {
         FS.hexdump(inputBuffer);
 
@@ -1607,7 +1607,6 @@ module.exports = {
     libNames,
     LV_ENTRY_SIZE,
     readLvInfo,
-    TABLE_ENTRY_SIZE,
     readTableEntry,
     readMasterChunk,
     parseELFSymbolAndString32,

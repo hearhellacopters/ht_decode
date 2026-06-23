@@ -807,8 +807,8 @@ function decodeData1Headers(buffer, hash1 = 0x2B4BC95A, hash2 = 0x5DB6A4B0) {
  */
 function readData1Entry(meta, entryID, seed = undefined) {
     // entry 4   seed = 0xCC29E208 - clasess.dex check
-    // entry 5   seed = 0xF684A9 - Lib hash check
-    // entry 7   seed = 0x97045CC - asset check
+    // entry 5   seed = 0xF684A9   - Lib hash check
+    // entry 7   seed = 0x97045CC  - asset check
     // entry 8   seed = 0x709ACA1D - AndroidManifest.xml
     // entry 128 seed = 0xF86CFF96 - Intel 386
     // entry 129 seed = 0x2D800665 - Arm
@@ -1473,7 +1473,7 @@ function decodeNextLvMaster(buffer, AES_TABLE, startSeed = 0x745F, nextELFBuffer
  * @param {number} len 
  * @returns {string}
  */
-function DoDecodeString2(buffer, len) {
+function DoDecodeString2(buffer, len = buffer.length) {
     let i = 0;
     for (i = 0; i < len; ++i) {
         let v2 = buffer[i];

@@ -1,7 +1,5 @@
 // @ts-check
 
-// node app.js --file ./libs/lib__57d5__.so --Lv0 0x15AC --Lv1 0x1C50 --Lv2 0x1C0C --Lv3 0x1C0C
-
 const pack = require('./package.json');
 const path = require("path");
 const { FS } = require("./src/File");
@@ -11,7 +9,6 @@ const {
 } = require('commander');
 const { 
     readLvInfo,
-    TABLE_ENTRY_SIZE,
     readTableEntry,
     parseELFSymbolAndString32,
     read241,
@@ -34,7 +31,6 @@ const {
     parse195,
     getSHTEndOffset32,
     getSHTEndOffset64,
-    makeSHTEntries32,
     fixData32_SIZE,
     fixData64_SIZE,
     libNames
@@ -52,7 +48,9 @@ const {
     decodeSubTable157,
     pageAlign,
     decodeData1Headers,
-    readData1Entry
+    readData1Entry,
+    DoDecodeString,
+    DoDecodeString2
 } = require('./src/Decode');
 
 /**
@@ -62,9 +60,9 @@ const {
  */
 const PROGRAM = new Command();
 
-const hasFile = new Option('-f, --file <string>', 'Location of the lib file');
+const hasFile = new Option('-f, --file <string>', 'Location of the library file');
 
-hasFile.required = true; hasFile.mandatory = true;
+//hasFile.required = true; hasFile.mandatory = true;
 
 const data1 = new Option('-d, --data1', 'The input file is a data1.dat file for decoding');
 
@@ -72,13 +70,15 @@ const data1ID = new Option('-i, --id [string...]', 'Array of data1.dat entry ids
 
 const data1Seeds = new Option('-s, --seeds [string...]', 'Array of data1.dat seeds to match with ids (can be in hex or decimal)');
 
-const hasOutput = new Option('-o, --output <string>', 'Location of for the decompiled lib files (defaults to input folder)');
+const hasOutput = new Option('-o, --output <string>', 'Location of for the decompiled library files (defaults to input folder)');
 
-const legacy = new Option('-y, --legacy', 'For libs older than 2023 (only 32 bit), try running legacy mode if decode failed.'); 
+const legacy = new Option('-y, --legacy', 'For libraries older than 2020 (only 32 bit), try running legacy mode if decode failed.'); 
+
+const decodeString = new Option('-r, --decodestring [string...]', 'Hex strings to decode (use the --legacy for legacy coded strings)'); 
 
 legacy.defaultValue = false;
 
-const LOUSER_START = new Option('-l, --LOUSER_START <string>', 'Offset within the LOUSER data of the master lib to start (default 572)');
+const LOUSER_START = new Option('-l, --LOUSER_START <string>', 'Offset within the LOUSER data of the master library to start (default 572)');
 
 LOUSER_START.defaultValue = 572;
 
@@ -108,11 +108,11 @@ const seed5 = new Option('-s5, --seed5 <string>','Offset within the libLv5.so to
 
 const aes_table6 = new Option('-e6, --aes_table6 <string>', 'Offset within the libLv6.so created to the encryption table. Can be in hex or decimal.');
 
-const seed6 = new Option('-s6, --seed6 <string>','Offset within the libLv6.so to the seed value used in creating the master lib. (can be in hex or decimal)');
+const seed6 = new Option('-s6, --seed6 <string>','Offset within the libLv6.so to the seed value used in creating the master library. (can be in hex or decimal)');
 
-const seed_table6 = new Option('-t6, --seed_table6 <string>','Offset within the libLv6.so to the seed value used in creating the tables for the master lib. (can be in hex or decimal)');
+const seed_table6 = new Option('-t6, --seed_table6 <string>','Offset within the libLv6.so to the seed value used in creating the tables for the master library. (can be in hex or decimal)');
 
-const offsets6 = new Option('-o6, --offsets6 <string>','Offset within the libLv6.so to the count of offset sections used in creating the master lib (only in 32 bit libs). (can be in hex or decimal)');
+const offsets6 = new Option('-o6, --offsets6 <string>','Offset within the libLv6.so to the count of offset sections used in creating the master library jump tables (only in 32 bit libraries). (can be in hex or decimal)');
 
 const aes_table7 = new Option('-e7, --aes_table7 <string>', 'Offset within the libLv6.so created to the encryption table. Can be in hex or decimal.');
 
@@ -124,15 +124,15 @@ const hasLv0 = new Option('-0, --Lv0 <string>', 'The location of the Lv0 structu
 
 hasLv0.defaultValue = 0;
 
-const hasLv1 = new Option('-1, --Lv1 <string>', 'The location of the Lv1 structure within the last lib created. (can be in hex or decimal)');
+const hasLv1 = new Option('-1, --Lv1 <string>', 'The location of the Lv1 structure within the last library created. (can be in hex or decimal)');
 
-const hasLv2 = new Option('-2, --Lv2 <string>', 'The location of the Lv2 structure within the last lib created. (can be in hex or decimal)');
+const hasLv2 = new Option('-2, --Lv2 <string>', 'The location of the Lv2 structure within the last library created. (can be in hex or decimal)');
 
-const hasLv3 = new Option('-3, --Lv3 <string>', 'The location of the Lv3 structure within the last lib created. (can be in hex or decimal)');
+const hasLv3 = new Option('-3, --Lv3 <string>', 'The location of the Lv3 structure within the last library created. (can be in hex or decimal)');
 // Set commands to program for
 PROGRAM
     .name('ht_decoder')
-    .description(`\x1b[36mFor decompiling Android libs\x1b[0m`)
+    .description(`\x1b[36mFor decompiling Android libraries\x1b[0m`)
     .version(pack.version)
     .addOption(hasFile)
     .addOption(data1)
@@ -162,7 +162,8 @@ PROGRAM
     .addOption(hasLv0)
     .addOption(hasLv1)
     .addOption(hasLv2)
-    .addOption(hasLv3);
+    .addOption(hasLv3)
+    .addOption(decodeString);
 
 PROGRAM.parse(process.argv);
 
@@ -205,6 +206,58 @@ function _init_dir_name() {
         return process.cwd();
     }
 };
+
+if(ARGV.decodestring){
+    if(ARGV.legacy){
+        try {
+            for (let i = 0; i < ARGV.decodestring.length; i++) {
+                const str = ARGV.decodestring[i];
+
+                var buffer = Buffer.from(str,"hex");
+
+                const len = pageAlign(buffer.length, 4, 1);
+
+                if(len != buffer.length){
+                    const destBuf = Buffer.alloc(len);
+
+                    buffer.copy(destBuf, 0);
+                }
+
+                console.log(DoDecodeString(buffer));
+            }
+
+            process.exit(0);
+        } catch (error) {
+            console.log(error);
+
+            process.exit(0);
+        }
+    } else {
+        try {
+            for (let i = 0; i < ARGV.decodestring.length; i++) {
+                const str = ARGV.decodestring[i];
+
+                var buffer = Buffer.from(str,"hex");
+
+                const len = pageAlign(buffer.length, 4, 1);
+
+                if(len != buffer.length){
+                    const destBuf = Buffer.alloc(len);
+
+                    buffer.copy(destBuf, 0);
+                }
+
+                console.log(DoDecodeString2(buffer));
+            }
+
+            process.exit(0);
+        } catch (error) {
+            console.log(error);
+
+            process.exit(0);
+        }
+    }
+}
 
 const DIR_NAME = _init_dir_name();
 
@@ -452,8 +505,8 @@ function runLegacy(){
 
         FS.writeFile(CONTROLLER_ELF_BUFFER, path.join(OUTPUT_PATH, masterLibName));
         // now tables
-        for (let z = 0; z < (LvData.tableSize / TABLE_ENTRY_SIZE) >>> 0; z++) {
-            const off = LOUSEROffset + LvData.tableOffset + (z * TABLE_ENTRY_SIZE);
+        for (let z = 0; z < (LvData.tableSize / 0x38) >>> 0; z++) {
+            const off = LOUSEROffset + LvData.tableOffset + (z * 0x38);
 
             const tableData = readTableEntry(MASTER_ELF_DATA, off);
 
@@ -514,10 +567,11 @@ function runLegacy(){
             process.exit(0);
         }
     }
-}
+};
+
 if(ARGV.data1){
-    if(ARGV.data1ID.length != ARGV.data1Seeds.length){
-        console.log("[!] Error: When parsing data1dat, id arry must match seed array length for pairing.");
+    if(ARGV.id.length != ARGV.seeds.length){
+        console.log("[!] Error: When parsing data1.dat, the id array must match the seed array length for pairing.");
 
         process.exit(0);
     }
@@ -529,10 +583,10 @@ if(ARGV.data1){
      */
     const idSeeds = {};
 
-    for (let index = 0; index < ARGV.data1ID.length; index++) {
-        const el = ARGV.data1ID[index];
+    for (let index = 0; index < ARGV.id.length; index++) {
+        const el = ARGV.id[index];
 
-        idSeeds[el] = _parseNumber(ARGV.data1Seeds[index]);
+        idSeeds[el] = _parseNumber(ARGV.seeds[index]);
     }
 
     const masterData = decodeData1Headers(MASTER_ELF_DATA);
@@ -554,7 +608,7 @@ if(ARGV.data1){
     var masterLibName = INPUT_LIB_NAME + "_decoded.dat";
 
     FS.writeFile(MASTER_ELF_DATA, path.join(OUTPUT_PATH, masterLibName));
-} else if(ARGV.legacy){
+} if(ARGV.legacy){
     runLegacy();
 } else {
     if(LOUSEROffset == 0){

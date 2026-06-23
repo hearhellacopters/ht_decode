@@ -88,13 +88,13 @@ struct startUp
 };
 
 enum e_version32_e // 4 bytes
-{                                       // XREF: ELFHeader.e_version32/r
+{
     EV_NONE    = 0x0,
     EV_CURRENT = 0x1,
 };
 
 enum e_machine32_e : __int16
-{                                       // XREF: ELFHeader.e_machine32/r
+{
     EM_NONE        = 0x0,
     EM_M32         = 0x1,
     EM_SPARC       = 0x2,
@@ -208,7 +208,7 @@ enum e_machine32_e : __int16
 };
 
 enum e_type32_e : __int16
-{                                       // XREF: ELFHeader.e_type32/r
+{
     ET_NONE   = 0x0,
     ET_REL    = 0x1,
     ET_EXEC   = 0x2,
@@ -221,7 +221,7 @@ enum e_type32_e : __int16
 };
 
 enum ei_osabi_e : __int8
-{                                       // XREF: ELFHeader.ei_osabi/r
+{
     ELFOSABI_NONE       = 0x0,
     ELFOSABI_HPUX       = 0x1,
     ELFOSABI_NETBSD     = 0x2,
@@ -242,14 +242,14 @@ enum ei_osabi_e : __int8
 };
 
 enum ei_version_e : __int8
-{                                       // XREF: ELFHeader.ei_version/r
+{
     E_NONE    = 0x0,
     E_CURRENT = 0x1,
     E_NUM     = 0x2,
 };
 
 enum ei_data_e : __int8
-{                                       // XREF: ELFHeader.ei_data/r
+{ 
     ELFDATANONE = 0x0,
     ELFDATA2LSB = 0x1,
     ELFDATA2MSB = 0x2,
@@ -257,7 +257,7 @@ enum ei_data_e : __int8
 };
 
 enum ei_class_2_e : __int8
-{                                       // XREF: ELFHeader.ei_class_2/r
+{
     ELFCLASSNONE = 0x0,
     ELFCLASS32   = 0x1,
     ELFCLASS64   = 0x2,
@@ -265,7 +265,7 @@ enum ei_class_2_e : __int8
 };
 
 enum sh_type // 4 bytes
-{                                       // XREF: Elf32_Shdr.sh_type/r
+{
     SHT_NULL           = 0x0,
     SHT_PROGBITS       = 0x1,
     SHT_SYMTAB         = 0x2,
@@ -305,7 +305,7 @@ enum sh_type // 4 bytes
 };
 
 enum __bitmask sh_flags // 4 bytes
-{                                       // XREF: Elf32_Shdr.sh_flags/r
+{
     SHF_WRITE            = 0x1,
     SHF_ALLOC            = 0x2,
     SHF_EXECINSTR        = 0x4,
