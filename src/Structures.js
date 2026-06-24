@@ -59,14 +59,14 @@ const libNames = {
     "7":   "assetHash.dat", // inside data1.dat
     "8":   "AndroidManifest.xml", // inside data1.dat
     "128": "", // inside data1.dat (Intel 386 version of 129)
-    "136": "", // inside data1.dat (Intel 386 version of 127)
+    "136": "", // inside data1.dat (Intel 386 version of 137)
     "137": "", // inside data1.dat
     "132": "", // inside data1.dat x86_64
     "133": "", // inside data1.dat Arm64
     "10":  "", // unknown
     // Lv0
     "129": "", // a 129 is also found inside data1.dat but doesn't look the same
-    "150": "", // shum func and cross reference
+    "150": "", // shim func and cross reference
     "243": "data243.dat",
     "227": "libLv1.so",
     // Lv1
@@ -94,7 +94,7 @@ const libNames = {
     "230": "libLv4.so",
     // Lv4
     "3":   "",
-    "160": "", // & 0x1000000 != 0
+    "160": "", // & 0x1000000 != 0 reruns some libs with a different pass off config
     "247": "data247.dat",
     "231": "libLv5.so",
     // Lv5 & Lv6

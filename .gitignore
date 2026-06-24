@@ -3,6 +3,7 @@ _lib*
 .nvmrc
 package-lock.json
 ht_decode.exe
+ht_decode.zip
 test_*
 libs/*
 !libs/lib__57d5__.so

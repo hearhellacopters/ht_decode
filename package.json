@@ -1,6 +1,6 @@
 {
   "name": "ht_decode",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Android unpacker breakdown.",
   "main": "app.js",
   "scripts": {
